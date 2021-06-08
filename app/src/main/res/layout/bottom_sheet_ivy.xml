@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    tools:context=".BottomSheetIvy">
+
+    <!--<TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="The Ivy Lee Method"
+        android:textColor="@color/black"
+        android:textSize="30sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />-->
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        app:liftOnScroll="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/topAppBar"
+            style="@style/Widget.MaterialComponents.Toolbar.Primary"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/white"
+            android:elevation="4dp"
+            app:layout_scrollFlags="scroll|enterAlways|snap"
+            app:navigationIcon="@drawable/round_close_24"
+            app:title="The Ivy Lee Method"
+            app:titleTextColor="@color/black" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean venenatis odio ac nunc ullamcorper sollicitudin. Phasellus sed gravida felis, non posuere dolor. Mauris a dolor in libero congue sodales. Duis lobortis tempus nunc, vitae rhoncus enim ornare at. Nam tempor massa eget luctus tristique. Sed aliquam viverra quam, vitae imperdiet dolor feugiat nec. Sed vitae magna a enim consequat vulputate. Phasellus iaculis, sem sed efficitur blandit, tellus dolor malesuada nisl, at auctor arcu sapien elementum orci. Aenean facilisis nulla interdum ex volutpat, non ultricies mi vehicula. Ut non risus pretium, tempor felis a, suscipit arcu. Vestibulum euismod, lorem et pellentesque facilisis, quam velit venenatis est, at ultricies mauris eros eu augue. Suspendisse cursus, tellus vitae pellentesque malesuada, nisi eros suscipit orci, ultrices aliquam ipsum magna eget ante. In justo velit, imperdiet eget dui porttitor, feugiat finibus neque. In nisi tortor, feugiat a iaculis quis, semper vel augue. Vivamus tristique libero a neque tempus, et faucibus sem hendrerit. Cras sem quam, placerat non metus in, cursus malesuada lectus.  Etiam euismod venenatis tristique. Sed at sem eu erat malesuada aliquam eget ac turpis. Quisque vel diam urna. Cras porttitor orci eu ipsum ullamcorper ultrices. Nullam imperdiet ante quis odio vehicula sagittis. Nullam congue massa sit amet posuere euismod. Aenean efficitur tempus justo ac accumsan. Pellentesque quam velit, tristique vitae ex mattis, efficitur dictum orci. Donec interdum neque nisl, eu tempor risus malesuada nec. Praesent luctus sapien facilisis libero posuere, ut iaculis dui eleifend.  Nulla rutrum aliquam venenatis. Suspendisse varius orci id erat imperdiet, nec fringilla neque commodo. Donec ac mattis metus. Suspendisse in vehicula mauris. Aliquam erat volutpat. Sed ut lorem bibendum, vehicula diam a, mattis ipsum. Maecenas mollis sagittis maximus. Duis fermentum quam dui, non tempor ipsum imperdiet dapibus. Phasellus facilisis porta magna, vel tincidunt ligula lacinia vel. Maecenas tincidunt suscipit suscipit. Praesent a auctor lacus."
+                android:textColor="@color/black"
+                android:textSize="24sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

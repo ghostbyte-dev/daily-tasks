@@ -52,7 +52,7 @@ class DBHandler(context: Context):SQLiteOpenHelper(context, DB_NAME, null, DB_VE
     fun getToDos(date:String):MutableList<ToDoItem>{
         val result:MutableList<ToDoItem> = ArrayList()
         val db = readableDatabase
-        var queryResult:Cursor
+        val queryResult:Cursor
         if(date == "today"){
             queryResult = db.rawQuery("SELECT * FROM $TABLE_TODO_ITEM WHERE $COL_CREATED_AT = date('now', 'localtime')", null)
         }

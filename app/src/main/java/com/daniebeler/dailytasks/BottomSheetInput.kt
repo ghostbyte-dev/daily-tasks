@@ -54,7 +54,7 @@ class BottomSheetInput : BottomSheetDialogFragment() {
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        date = arguments!!.getString("date", "today")
+        date = requireArguments().getString("date", "today")
 
         dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 
@@ -66,7 +66,7 @@ class BottomSheetInput : BottomSheetDialogFragment() {
 
         setStyle(DialogFragment.STYLE_NORMAL, R.style.DialogStyle)
 
-        dbHandler = DBHandler(activity!!.applicationContext)
+        dbHandler = DBHandler(requireActivity().applicationContext)
 
         editText = view.findViewById(R.id.et_dialog)
         editText.requestFocus()

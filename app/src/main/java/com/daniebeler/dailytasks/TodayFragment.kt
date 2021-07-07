@@ -20,7 +20,7 @@ class TodayFragment : Fragment(), TodoAdapter.OnItemClickListener, TodoAdapter.O
     ): View {
         val view: View = inflater.inflate(R.layout.fragment_today, container, false)
 
-        dbHandler = DBHandler(activity!!.applicationContext)
+        dbHandler = DBHandler(requireActivity().applicationContext)
 
         rv_dashboard = view.findViewById(R.id.rv_dashboard_today)
         rv_dashboard?.layoutManager = LinearLayoutManager(activity?.applicationContext)

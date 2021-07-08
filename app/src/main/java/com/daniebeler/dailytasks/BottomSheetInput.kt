@@ -6,14 +6,12 @@ import android.os.Handler
 import android.view.*
 import android.widget.Button
 import android.widget.EditText
-import android.widget.FrameLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -34,6 +32,11 @@ class BottomSheetInput : BottomSheetDialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
+
+        if (dialog is BottomSheetDialog) {
+            dialog.behavior.skipCollapsed = true
+            dialog.behavior.state = STATE_EXPANDED
+        }
 
         dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
         dialog.setOnShowListener {

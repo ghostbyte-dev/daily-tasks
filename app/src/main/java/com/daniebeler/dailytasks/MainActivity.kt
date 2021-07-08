@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.tabs.TabLayout
@@ -18,10 +17,10 @@ class MainActivity : AppCompatActivity() {
     lateinit var btnIvy: Button
     lateinit var bottomSheetDialog: BottomSheetDialogFragment
 
-    lateinit var viewPager:ViewPager2
+    lateinit var viewPager: ViewPager2
 
-    lateinit var fragment1: Fragment
-    lateinit var fragment2: Fragment
+    lateinit var todayFragment: ListFragment
+    lateinit var tomorrowFragment: ListFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +28,6 @@ class MainActivity : AppCompatActivity() {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
         viewPager = findViewById(R.id.viewpager)
-
         initViewPager2()
 
         btnAdd = findViewById(R.id.btn_add)
@@ -55,10 +53,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun initViewPager2(){
         val adapter = StateAdapter(supportFragmentManager, lifecycle)
-        fragment1 = adapter.createFragment(0)
-        fragment2 = adapter.createFragment(1)
-
         viewPager.adapter = adapter
+        todayFragment = adapter.createFragment(0) as ListFragment
+        tomorrowFragment = adapter.createFragment(1) as ListFragment
 
         val tabLayout:TabLayout = findViewById(R.id.tablayout)
         val names:ArrayList<String> = arrayListOf("Today", "Tomorrow")
@@ -69,10 +66,10 @@ class MainActivity : AppCompatActivity() {
 
     fun refresh(date:String){
         if(date == "today"){
-            (fragment1 as TodayFragment).refreshList()
+            todayFragment.refreshList()
         }
         else{
-            (fragment2 as TomorrowFragment).refreshList()
+            tomorrowFragment.refreshList()
         }
     }
 }

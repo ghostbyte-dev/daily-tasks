@@ -10,9 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 
 class ListFragment : Fragment(), TodoAdapter.OnItemClickListener, TodoAdapter.OnItemLongclickListener {
 
-    private var dbHandler: DBHandler? = null
     private var rv_dashboard: RecyclerView? = null
     private var day = ""
+    lateinit var mainActivity: MainActivity
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
@@ -20,9 +20,8 @@ class ListFragment : Fragment(), TodoAdapter.OnItemClickListener, TodoAdapter.On
     ): View {
         val view: View = inflater.inflate(R.layout.fragment_list, container, false)
 
+        mainActivity = activity as MainActivity
         day = requireArguments().getString("day", "today")
-
-        dbHandler = DBHandler(requireActivity().applicationContext)
 
         rv_dashboard = view.findViewById(R.id.rv_dashboard_today)
         rv_dashboard?.layoutManager = LinearLayoutManager(activity?.applicationContext)
@@ -37,16 +36,16 @@ class ListFragment : Fragment(), TodoAdapter.OnItemClickListener, TodoAdapter.On
     }
 
     fun refreshList(){
-        rv_dashboard?.adapter = TodoAdapter(dbHandler!!.getToDos(day), this, this)
+        rv_dashboard?.adapter = TodoAdapter(mainActivity.dbHandler.getToDos(day), this, this)
     }
 
     override fun onItemClick(position: Int) {
-        dbHandler!!.updateToDo(position, day)
+        mainActivity.dbHandler.updateToDo(position, day)
         refreshList()
     }
 
     override fun onItemLongClick(position: Int) {
-        dbHandler!!.deleteToDo(position, day)
+        mainActivity.dbHandler.deleteToDo(position, day)
         refreshList()
     }
 }

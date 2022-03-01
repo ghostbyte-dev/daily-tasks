@@ -33,7 +33,7 @@ class DBHandler(context: Context):SQLiteOpenHelper(context, DB_NAME, null, DB_VE
         db.update(TABLE_TODO_ITEM, data, "$COL_ID=?", arrayOf(mutableList[position].id.toString()))
     }
 
-    fun addToDo(toDo: ToDoItem, date: String) : Boolean{
+    fun addToDo(toDo: ToDoItem) : Boolean{
         val db:SQLiteDatabase = writableDatabase
         val cv = ContentValues()
         cv.put(COL_NAME, toDo.name)

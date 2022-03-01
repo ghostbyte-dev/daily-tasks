@@ -22,6 +22,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var todayFragment: ListFragment
     lateinit var tomorrowFragment: ListFragment
 
+    lateinit var dbHandler: DBHandler
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -29,6 +31,8 @@ class MainActivity : AppCompatActivity() {
 
         viewPager = findViewById(R.id.viewpager)
         initViewPager2()
+
+        dbHandler = DBHandler(this)
 
         btnAdd = findViewById(R.id.btn_add)
         btnAdd.setOnClickListener{

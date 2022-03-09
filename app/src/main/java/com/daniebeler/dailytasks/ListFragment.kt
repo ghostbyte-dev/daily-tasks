@@ -1,6 +1,7 @@
 package com.daniebeler.dailytasks
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +14,7 @@ class ListFragment : Fragment(), TodoAdapter.OnItemClickListener, TodoAdapter.On
     private var rv_dashboard: RecyclerView? = null
     private var day = ""
     lateinit var mainActivity: MainActivity
+    lateinit var dbHandler: DBHandler
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
@@ -21,10 +23,13 @@ class ListFragment : Fragment(), TodoAdapter.OnItemClickListener, TodoAdapter.On
         val view: View = inflater.inflate(R.layout.fragment_list, container, false)
 
         mainActivity = activity as MainActivity
+        dbHandler = mainActivity.dbHandler
+        Log.d("state", "ListFragment: initialized mainActivity")
         day = requireArguments().getString("day", "today")
 
-        rv_dashboard = view.findViewById(R.id.rv_dashboard_today)
-        rv_dashboard?.layoutManager = LinearLayoutManager(activity?.applicationContext)
+
+
+        Log.d("state", "ListFragment: initialized rv_dashboard")
 
         return view
     }
@@ -32,11 +37,21 @@ class ListFragment : Fragment(), TodoAdapter.OnItemClickListener, TodoAdapter.On
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        rv_dashboard = requireView().findViewById(R.id.rv_dashboard_today)
+        rv_dashboard?.layoutManager = LinearLayoutManager(activity?.applicationContext)
+
         refreshList()
     }
 
     fun refreshList(){
-        rv_dashboard?.adapter = TodoAdapter(mainActivity.dbHandler.getToDos(day), this, this)
+        Log.d("state", "ListFragment: refreshing list")
+        //mainActivity.dbHandler.getToDos(day)
+        if(rv_dashboard == null) {
+            Log.d("state", "ListFragment: rv_Dashboard is null!!!!!!!!!!")
+        }
+
+        rv_dashboard?.adapter = TodoAdapter(dbHandler.getToDos(day), this, this)
+        Log.d("state", "ListFragment: refreshing done")
     }
 
     override fun onItemClick(position: Int) {

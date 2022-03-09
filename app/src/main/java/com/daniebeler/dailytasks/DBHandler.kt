@@ -5,6 +5,7 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
 import kotlin.collections.ArrayList
 
 class DBHandler(context: Context):SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION)  {
@@ -24,6 +25,7 @@ class DBHandler(context: Context):SQLiteOpenHelper(context, DB_NAME, null, DB_VE
     }
 
     fun updateToDo(position: Int, date: String) {
+        Log.d("state", "DBHandler: updating todo of $date")
         val db:SQLiteDatabase = writableDatabase
         val mutableList:MutableList<ToDoItem> = getToDos(date)
 
@@ -34,12 +36,14 @@ class DBHandler(context: Context):SQLiteOpenHelper(context, DB_NAME, null, DB_VE
     }
 
     fun addToDo(toDo: ToDoItem) : Boolean{
+        Log.d("state", "DBHandler: inserting into db")
         val db:SQLiteDatabase = writableDatabase
         val cv = ContentValues()
         cv.put(COL_NAME, toDo.name)
         cv.put(COL_CREATED_AT, toDo.date)
         cv.put(COL_IS_COMPLETED, false)
         val result : Long = db.insert(TABLE_TODO_ITEM, null, cv)
+        Log.d("state", "DBHandler: inserted into db")
         return result != (-1).toLong()
     }
 
@@ -50,6 +54,7 @@ class DBHandler(context: Context):SQLiteOpenHelper(context, DB_NAME, null, DB_VE
     }
 
     fun getToDos(date:String):MutableList<ToDoItem>{
+        Log.d("state", "DBHandler: getting todos of $date")
         val result:MutableList<ToDoItem> = ArrayList()
         val db = readableDatabase
         val queryResult:Cursor

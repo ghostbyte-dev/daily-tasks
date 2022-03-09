@@ -2,6 +2,7 @@ package com.daniebeler.dailytasks
 
 import android.app.Dialog
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.Button
 import android.widget.EditText
@@ -22,7 +23,6 @@ class BottomSheetInput : BottomSheetDialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mainActivity = activity as MainActivity
-
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -52,7 +52,7 @@ class BottomSheetInput : BottomSheetDialogFragment() {
             saveAndClose()
         }
 
-        editText.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
+        editText.setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
                 saveAndClose()
 
@@ -63,6 +63,7 @@ class BottomSheetInput : BottomSheetDialogFragment() {
     }
 
     private fun saveAndClose(){
+
         if (editText.text.isNotEmpty()) {
             val toDo = ToDoItem()
             toDo.name = editText.text.toString()

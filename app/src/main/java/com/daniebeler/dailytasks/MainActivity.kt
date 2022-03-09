@@ -3,6 +3,7 @@ package com.daniebeler.dailytasks
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -13,7 +14,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var btnAdd:Button
+    lateinit var btnAdd: Button
     lateinit var btnIvy: Button
     lateinit var bottomSheetDialog: BottomSheetDialogFragment
 
@@ -29,7 +30,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
-        viewPager = findViewById(R.id.viewpager)
         initViewPager2()
 
         dbHandler = DBHandler(this)
@@ -56,6 +56,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initViewPager2(){
+        viewPager = findViewById(R.id.viewpager)
         val adapter = StateAdapter(supportFragmentManager, lifecycle)
         viewPager.adapter = adapter
         todayFragment = adapter.createFragment(0) as ListFragment
@@ -70,6 +71,7 @@ class MainActivity : AppCompatActivity() {
 
     fun refresh(date:String){
         if(date == "today"){
+            Log.d("state", "MainActivity: refreshing todays list")
             todayFragment.refreshList()
         }
         else{

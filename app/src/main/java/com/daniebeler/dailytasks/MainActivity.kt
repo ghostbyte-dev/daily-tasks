@@ -57,19 +57,27 @@ class MainActivity : AppCompatActivity() {
 
     private fun initViewPager2(){
         viewPager = findViewById(R.id.viewpager)
-        val adapter = StateAdapter(supportFragmentManager, lifecycle)
+        val adapter = StateAdapter(this)
         viewPager.adapter = adapter
+
+        adapter.addFragment(0)
+        adapter.addFragment(1)
         todayFragment = adapter.createFragment(0) as ListFragment
         tomorrowFragment = adapter.createFragment(1) as ListFragment
+
+        Log.d("state", "Check: main: today: init:" + todayFragment)
 
         val tabLayout:TabLayout = findViewById(R.id.tablayout)
         val names:ArrayList<String> = arrayListOf("Today", "Tomorrow")
         TabLayoutMediator(tabLayout, viewPager){tab,position ->
             tab.text = names[position]
         }.attach()
+
+        Log.d("state", "Check: main: today: init:" + todayFragment)
     }
 
     fun refresh(date:String){
+        Log.d("state", "Check: main: today: refresh: " + todayFragment)
         if(date == "today"){
             Log.d("state", "MainActivity: refreshing todays list")
             todayFragment.refreshList()

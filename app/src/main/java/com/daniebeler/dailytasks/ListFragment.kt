@@ -12,9 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
 class ListFragment : Fragment(), TodoAdapter.OnItemClickListener, TodoAdapter.OnItemLongclickListener {
 
     private var rv_dashboard: RecyclerView? = null
-    private var day = ""
+    var day = ""
     lateinit var mainActivity: MainActivity
-    lateinit var dbHandler: DBHandler
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
@@ -23,12 +22,10 @@ class ListFragment : Fragment(), TodoAdapter.OnItemClickListener, TodoAdapter.On
         val view: View = inflater.inflate(R.layout.fragment_list, container, false)
 
         mainActivity = activity as MainActivity
-        dbHandler = mainActivity.dbHandler
         Log.d("state", "ListFragment: initialized mainActivity")
         day = requireArguments().getString("day", "today")
 
-
-
+        Log.d("state", "Check: list: today: init: " + this)
         Log.d("state", "ListFragment: initialized rv_dashboard")
 
         return view
@@ -45,12 +42,15 @@ class ListFragment : Fragment(), TodoAdapter.OnItemClickListener, TodoAdapter.On
 
     fun refreshList(){
         Log.d("state", "ListFragment: refreshing list")
+
+        Log.d("state", "Check: list: today: refresh: " + this)
+
         //mainActivity.dbHandler.getToDos(day)
         if(rv_dashboard == null) {
             Log.d("state", "ListFragment: rv_Dashboard is null!!!!!!!!!!")
         }
 
-        rv_dashboard?.adapter = TodoAdapter(dbHandler.getToDos(day), this, this)
+        rv_dashboard?.adapter = TodoAdapter(mainActivity.dbHandler.getToDos(day), this, this)
         Log.d("state", "ListFragment: refreshing done")
     }
 

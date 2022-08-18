@@ -1,19 +1,25 @@
 package com.daniebeler.dailytasks
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.Lifecycle
+import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 
-class StateAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :
-    FragmentStateAdapter(fragmentManager, lifecycle) {
+
+class StateAdapter(fa: FragmentActivity) : FragmentStateAdapter(fa) {
+
+    private val fragmentList = ArrayList<Fragment>()
 
     override fun getItemCount(): Int {
-        return 2
+        return fragmentList.size
     }
 
     override fun createFragment(position: Int): Fragment {
+        return fragmentList.get(position);
+    }
+
+    fun addFragment(position: Int) {
 
         val todayFragment = ListFragment()
         val args = Bundle()
@@ -26,6 +32,8 @@ class StateAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :
         }
 
         todayFragment.arguments = args
-        return todayFragment
+
+        Log.d("state", "Check: stateAdapter: creation:" + todayFragment)
+        fragmentList.add(todayFragment)
     }
 }

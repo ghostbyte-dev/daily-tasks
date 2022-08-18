@@ -13,14 +13,14 @@ import com.google.android.material.tabs.TabLayoutMediator
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var btnAdd: Button
-    lateinit var btnIvy: Button
-    lateinit var bottomSheetDialog: BottomSheetDialogFragment
+    private lateinit var btnAdd: Button
+    private lateinit var btnIvy: Button
+    private lateinit var bottomSheetDialog: BottomSheetDialogFragment
 
-    lateinit var viewPager: ViewPager2
+    private lateinit var viewPager: ViewPager2
 
-    lateinit var todayFragment: ListFragment
-    lateinit var tomorrowFragment: ListFragment
+    private lateinit var todayFragment: ListFragment
+    private lateinit var tomorrowFragment: ListFragment
 
     lateinit var dbHandler: DBHandler
 

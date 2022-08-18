@@ -10,9 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 
 class ListFragment : Fragment(), TodoAdapter.OnItemClickListener, TodoAdapter.OnItemLongclickListener {
 
-    private var rv_dashboard: RecyclerView? = null
-    var day = ""
-    lateinit var mainActivity: MainActivity
+    private var recyclerView: RecyclerView? = null
+    private var day = ""
+    private lateinit var mainActivity: MainActivity
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
@@ -28,14 +28,14 @@ class ListFragment : Fragment(), TodoAdapter.OnItemClickListener, TodoAdapter.On
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        rv_dashboard = requireView().findViewById(R.id.rv_dashboard_today)
-        rv_dashboard?.layoutManager = LinearLayoutManager(activity?.applicationContext)
+        recyclerView = requireView().findViewById(R.id.rv_dashboard_today)
+        recyclerView?.layoutManager = LinearLayoutManager(activity?.applicationContext)
 
         refreshList()
     }
 
     fun refreshList(){
-        rv_dashboard?.adapter = TodoAdapter(mainActivity.dbHandler.getToDos(day), this, this)
+        recyclerView?.adapter = TodoAdapter(mainActivity.dbHandler.getToDos(day), this, this)
     }
 
     override fun onItemClick(position: Int) {

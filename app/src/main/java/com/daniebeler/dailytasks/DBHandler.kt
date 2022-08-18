@@ -57,12 +57,10 @@ class DBHandler(context: Context):SQLiteOpenHelper(context, DB_NAME, null, DB_VE
         Log.d("state", "DBHandler: getting todos of $date")
         val result:MutableList<ToDoItem> = ArrayList()
         val db = readableDatabase
-        val queryResult:Cursor
-        if(date == "today"){
-            queryResult = db.rawQuery("SELECT * FROM $TABLE_TODO_ITEM WHERE $COL_CREATED_AT = date('now', 'localtime')", null)
-        }
-        else{
-            queryResult = db.rawQuery("SELECT * FROM $TABLE_TODO_ITEM WHERE $COL_CREATED_AT = date('now', '+1 day', 'localtime')", null)
+        val queryResult:Cursor = if(date == "today"){
+            db.rawQuery("SELECT * FROM $TABLE_TODO_ITEM WHERE $COL_CREATED_AT = date('now', 'localtime')", null)
+        } else{
+            db.rawQuery("SELECT * FROM $TABLE_TODO_ITEM WHERE $COL_CREATED_AT = date('now', '+1 day', 'localtime')", null)
         }
 
         if(queryResult.moveToFirst()){

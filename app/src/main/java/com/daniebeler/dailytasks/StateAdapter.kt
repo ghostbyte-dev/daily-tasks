@@ -15,7 +15,7 @@ class StateAdapter(fa: FragmentActivity) : FragmentStateAdapter(fa) {
     }
 
     override fun createFragment(position: Int): Fragment {
-        return fragmentList.get(position);
+        return fragmentList[position]
     }
 
     fun addFragment(position: Int) {

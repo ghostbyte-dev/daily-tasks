@@ -1,34 +1,28 @@
 package com.daniebeler.dailytasks
 
-import android.app.Dialog
 import android.os.Bundle
-import android.util.Log
-import android.view.*
+import android.view.KeyEvent
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.*
 
 class BottomSheetInput : BottomSheetDialogFragment() {
 
-    lateinit var editText: EditText
-    lateinit var button: Button
-    var date = ""
-    lateinit var mainActivity: MainActivity
+    private lateinit var editText: EditText
+    private lateinit var button: Button
+    private var date = ""
+    private lateinit var mainActivity: MainActivity
 
     override fun getTheme(): Int = R.style.BottomSheetDialogTheme
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mainActivity = activity as MainActivity
-    }
-
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialog = super.onCreateDialog(savedInstanceState)
-
-        return dialog
     }
 
     override fun onCreateView(

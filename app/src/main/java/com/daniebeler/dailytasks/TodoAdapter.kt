@@ -10,16 +10,15 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 
-class TodoAdapter(val list: MutableList<ToDoItem>, val listener: OnItemClickListener, val longlistener: OnItemLongclickListener) : RecyclerView.Adapter<TodoAdapter.ViewHolder>(){
+class TodoAdapter(private val list: MutableList<ToDoItem>, val listener: OnItemClickListener, val longlistener: OnItemLongclickListener) : RecyclerView.Adapter<TodoAdapter.ViewHolder>(){
 
-    lateinit var context: Context
+    private lateinit var context: Context
 
     inner class ViewHolder(v: View) : RecyclerView.ViewHolder(v), View.OnClickListener, View.OnLongClickListener{
         val toDoName : TextView = v.findViewById(R.id.tv_todo_name)
 
         init {
             v.setOnClickListener(this)
-
             v.setOnLongClickListener(this)
         }
 

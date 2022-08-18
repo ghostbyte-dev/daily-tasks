@@ -3,7 +3,6 @@ package com.daniebeler.dailytasks
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -65,21 +64,15 @@ class MainActivity : AppCompatActivity() {
         todayFragment = adapter.createFragment(0) as ListFragment
         tomorrowFragment = adapter.createFragment(1) as ListFragment
 
-        Log.d("state", "Check: main: today: init:" + todayFragment)
-
         val tabLayout:TabLayout = findViewById(R.id.tablayout)
         val names:ArrayList<String> = arrayListOf("Today", "Tomorrow")
         TabLayoutMediator(tabLayout, viewPager){tab,position ->
             tab.text = names[position]
         }.attach()
-
-        Log.d("state", "Check: main: today: init:" + todayFragment)
     }
 
     fun refresh(date:String){
-        Log.d("state", "Check: main: today: refresh: " + todayFragment)
         if(date == "today"){
-            Log.d("state", "MainActivity: refreshing todays list")
             todayFragment.refreshList()
         }
         else{

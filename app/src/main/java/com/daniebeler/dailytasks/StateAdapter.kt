@@ -1,7 +1,6 @@
 package com.daniebeler.dailytasks
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -32,8 +31,6 @@ class StateAdapter(fa: FragmentActivity) : FragmentStateAdapter(fa) {
         }
 
         todayFragment.arguments = args
-
-        Log.d("state", "Check: stateAdapter: creation:" + todayFragment)
         fragmentList.add(todayFragment)
     }
 }

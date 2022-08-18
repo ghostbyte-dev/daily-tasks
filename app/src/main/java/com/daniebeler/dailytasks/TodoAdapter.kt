@@ -59,8 +59,6 @@ class TodoAdapter(val list: MutableList<ToDoItem>, val listener: OnItemClickList
         return list.size
     }
 
-
-
     interface OnItemClickListener{
         fun onItemClick(position: Int)
     }

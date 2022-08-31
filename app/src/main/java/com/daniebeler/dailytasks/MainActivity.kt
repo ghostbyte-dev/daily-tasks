@@ -15,6 +15,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var btnAdd: Button
     private lateinit var btnIvy: Button
+    private lateinit var btnMode: Button
     private lateinit var bottomSheetDialog: BottomSheetDialogFragment
 
     private lateinit var viewPager: ViewPager2
@@ -27,7 +28,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
         initViewPager2()
 
@@ -51,6 +52,17 @@ class MainActivity : AppCompatActivity() {
         btnIvy = findViewById(R.id.btn_ivy)
         btnIvy.setOnClickListener {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://jamesclear.com/ivy-lee")))
+        }
+
+        btnMode = findViewById(R.id.btn_mode)
+        btnMode.setOnClickListener {
+            if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_NO) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
+
+
         }
     }
 

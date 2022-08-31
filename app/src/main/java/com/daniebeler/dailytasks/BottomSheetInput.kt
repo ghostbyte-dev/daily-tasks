@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import androidx.fragment.app.DialogFragment
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -18,10 +19,12 @@ class BottomSheetInput : BottomSheetDialogFragment() {
     private var date = ""
     private lateinit var mainActivity: MainActivity
 
-    override fun getTheme(): Int = R.style.BottomSheetDialogTheme
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        setStyle(DialogFragment.STYLE_NORMAL, R.style.BaseBottomSheetDialog)
+
         mainActivity = activity as MainActivity
     }
 

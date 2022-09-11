@@ -50,7 +50,7 @@ class TodoAdapter(private val list: MutableList<ToDoItem>, val listener: OnItemC
 
         if(list[position].isCompleted){
             holder.toDoName.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
-            holder.toDoName.setTextColor(ContextCompat.getColor(context, R.color.grey))
+//            holder.toDoName.setTextColor(ContextCompat.getColor(context, R.color.dark))
         }
     }
 

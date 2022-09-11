@@ -9,10 +9,10 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_mode"
-        style="@style/Widget.Material3.Button.IconButton"
+        style="@style/ThemeButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:icon="@drawable/round_add_24"
+        android:layout_marginStart="16dp"
         app:layout_constraintBottom_toTopOf="@+id/tablayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

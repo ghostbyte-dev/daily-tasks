@@ -19,12 +19,9 @@ class BottomSheetInput : BottomSheetDialogFragment() {
     private var date = ""
     private lateinit var mainActivity: MainActivity
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setStyle(DialogFragment.STYLE_NORMAL, R.style.BaseBottomSheetDialog)
-
         mainActivity = activity as MainActivity
     }
 

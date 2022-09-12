@@ -1,8 +1,11 @@
 package com.daniebeler.dailytasks
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -25,10 +28,16 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var dbHandler: DBHandler
 
+    lateinit var themeSharedPreferences: SharedPreferences
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+
+        themeSharedPreferences =  getSharedPreferences("DAILY_TASKS", Context.MODE_PRIVATE)
+        if (themeSharedPreferences.getString("theme", "light") != "light") {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        }
 
         initViewPager2()
 
@@ -57,12 +66,12 @@ class MainActivity : AppCompatActivity() {
         btnMode = findViewById(R.id.btn_mode)
         btnMode.setOnClickListener {
             if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_NO) {
+                themeSharedPreferences.edit().putString("theme", "dark").apply()
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             } else {
+                themeSharedPreferences.edit().putString("theme", "light").apply()
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             }
-
-
         }
     }
 
@@ -84,6 +93,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun refresh(date:String){
+        Log.d("state", "Main: refreshing")
         if(date == "today"){
             todayFragment.refreshList()
         }

@@ -1,6 +1,7 @@
 package com.daniebeler.dailytasks
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,6 +31,8 @@ class ListFragment : Fragment(), TodoAdapter.OnItemClickListener, TodoAdapter.On
 
         recyclerView = requireView().findViewById(R.id.rv_dashboard_today)
         recyclerView?.layoutManager = LinearLayoutManager(activity?.applicationContext)
+
+        Log.d("state", "Listfragment: onViewCreated id:" + this)
 
         refreshList()
     }

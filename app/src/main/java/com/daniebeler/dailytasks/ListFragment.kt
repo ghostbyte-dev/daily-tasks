@@ -48,11 +48,11 @@ class ListFragment : Fragment(), TodoAdapter.OnItemClickListener, TodoAdapter.On
 
         Log.d("loog", (recyclerView?.adapter)?.itemCount.toString())
 
-        if ((recyclerView?.adapter)?.itemCount == 0) {
-            textView.visibility = View.VISIBLE
-        } else {
-            textView.visibility = View.INVISIBLE
-        }
+//        if ((recyclerView?.adapter)?.itemCount == 0) {
+//            textView.visibility = View.VISIBLE
+//        } else {
+//            textView.visibility = View.INVISIBLE
+//        }
     }
 
     override fun onItemClick(position: Int) {

@@ -103,7 +103,7 @@ class MainActivity : ComponentActivity() {
                                 },
                                 modifier = Modifier
                                     .weight(1f)
-//                                    .focusRequester(focusRequester)
+                                    .focusRequester(focusRequester)
                             )
 
 
@@ -134,9 +134,9 @@ class MainActivity : ComponentActivity() {
                         }
                     }
 
-                    /*LaunchedEffect(key1 = Unit) {
+                    LaunchedEffect(key1 = Unit) {
                         focusRequester.requestFocus()
-                    }*/
+                    }
                 }
 
                 Column(

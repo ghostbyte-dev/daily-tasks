@@ -3,6 +3,7 @@ package com.daniebeler.dailytasks
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -34,15 +35,19 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -57,7 +62,8 @@ class MainActivity : ComponentActivity() {
     lateinit var dbHandler: DBHandler
 
     @OptIn(
-        ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class
+        ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class,
+        ExperimentalComposeUiApi::class
     )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,6 +90,7 @@ class MainActivity : ComponentActivity() {
             }
 
             val focusRequester = remember { FocusRequester() }
+            val focusManager = LocalFocusManager.current
 
             listToday = dbHandler.getToDos("today")
             listTomorrow = dbHandler.getToDos("tomorrow")
@@ -92,12 +99,16 @@ class MainActivity : ComponentActivity() {
 
             var showSheet by remember { mutableStateOf(false) }
 
+            val keyboardController = LocalSoftwareKeyboardController.current
+
             DailyTasksTheme() {
                 if (showSheet) {
 
                     ModalBottomSheet(
                         sheetState = sheetState,
+                        dragHandle = null,
                         onDismissRequest = {
+                            focusManager.clearFocus()
                             showSheet = false
                         },
                     ) {
@@ -109,7 +120,6 @@ class MainActivity : ComponentActivity() {
                                 value = modalTextValue, onValueChange = { newText ->
                                     modalTextValue = newText
                                 },
-
                                 modifier = Modifier
                                     .weight(1f)
                                     .focusRequester(focusRequester),
@@ -117,6 +127,7 @@ class MainActivity : ComponentActivity() {
                                 keyboardActions = KeyboardActions(
                                     onDone = {
                                         if (modalTextValue.isNotBlank()) {
+                                            keyboardController?.hide()
                                             val toDo = ToDoItem()
                                             toDo.name = modalTextValue
 
@@ -136,6 +147,7 @@ class MainActivity : ComponentActivity() {
                                             listTomorrow = dbHandler.getToDos("tomorrow")
                                             scope.launch { sheetState.hide() }.invokeOnCompletion {
                                                 if (!sheetState.isVisible) {
+                                                    focusManager.clearFocus()
                                                     showSheet = false
                                                 }
                                             }
@@ -173,6 +185,7 @@ class MainActivity : ComponentActivity() {
                                     listTomorrow = dbHandler.getToDos("tomorrow")
                                     scope.launch { sheetState.hide() }.invokeOnCompletion {
                                         if (!sheetState.isVisible) {
+                                            focusManager.clearFocus()
                                             showSheet = false
                                         }
                                     }
@@ -181,10 +194,12 @@ class MainActivity : ComponentActivity() {
                                 Text(text = "save")
                             }
                         }
-                    }
 
-                    LaunchedEffect(key1 = Unit) {
-                        focusRequester.requestFocus()
+                        LaunchedEffect(key1 = Unit) {
+                            Log.d("swarox", "soos")
+                            focusRequester.requestFocus()
+                            keyboardController?.show()
+                        }
                     }
                 }
 

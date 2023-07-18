@@ -20,7 +20,14 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
     secondary = PurpleGrey80,
-    tertiary = Pink80
+    tertiary = Pink80,
+    background = Color.Black,
+    surface = Color.Black,
+    onPrimary = Color.White,
+    onSecondary = Color.White,
+    onTertiary = Color.White,
+    onBackground = Color.White,
+    onSurface = Color.White,
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -54,29 +61,15 @@ fun DailyTasksTheme(
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
-    val view = LocalView.current
-    if (!view.isInEditMode) {
-        SideEffect {
-            val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
-        }
-    }
 
     MaterialTheme(
-        colorScheme = LightColorScheme,
+        colorScheme = colorScheme,
         typography = Typography,
         content = content
     )
 
     val systemUiController = rememberSystemUiController()
-    if(darkTheme){
-        systemUiController.setSystemBarsColor(
-            color = Color.Green
-        )
-    }else{
-        systemUiController.setSystemBarsColor(
-            color = Color.Red
-        )
-    }
+    systemUiController.setSystemBarsColor(
+        color = colorScheme.background
+    )
 }

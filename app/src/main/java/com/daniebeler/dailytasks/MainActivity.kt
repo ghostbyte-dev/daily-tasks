@@ -6,8 +6,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,17 +20,21 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledIconToggleButton
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -79,13 +85,12 @@ class MainActivity : ComponentActivity() {
             listToday = dbHandler.getToDos("today")
             listTomorrow = dbHandler.getToDos("tomorrow")
 
-            var tabIndex by remember { mutableStateOf(0) }
             val pagerState = rememberPagerState()
 
-            var checked by remember { mutableStateOf(false) }
+            var darkTheme by remember { mutableStateOf(false) }
 
 
-            DailyTasksTheme {
+            DailyTasksTheme(darkTheme = darkTheme) {
                 if (sheetState.isVisible) {
 
                     ModalBottomSheet(
@@ -96,14 +101,23 @@ class MainActivity : ComponentActivity() {
                             }
                         },
                     ) {
-                        Row(horizontalArrangement = Arrangement.SpaceAround) {
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceAround,
+                            modifier = Modifier.padding(16.dp)
+                        ) {
                             TextField(
                                 value = modalTextValue, onValueChange = { newText ->
                                     modalTextValue = newText
                                 },
                                 modifier = Modifier
                                     .weight(1f)
-                                    .focusRequester(focusRequester)
+                                    .focusRequester(focusRequester),
+                                colors = TextFieldDefaults.colors(
+                                    focusedContainerColor = Color.Transparent,
+                                    unfocusedContainerColor = Color.Transparent,
+                                    focusedIndicatorColor = Color.Transparent
+                                )
+
                             )
 
 
@@ -112,7 +126,7 @@ class MainActivity : ComponentActivity() {
                                     val toDo = ToDoItem()
                                     toDo.name = modalTextValue
 
-                                    if (tabIndex == 0) {
+                                    if (pagerState.currentPage == 0) {
                                         toDo.date = LocalDate.now()
                                             .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
                                     } else {
@@ -121,6 +135,8 @@ class MainActivity : ComponentActivity() {
                                     }
 
                                     dbHandler.addToDo(toDo)
+
+                                    modalTextValue = ""
 
                                     listToday = dbHandler.getToDos("today")
                                     listTomorrow = dbHandler.getToDos("tomorrow")
@@ -145,19 +161,19 @@ class MainActivity : ComponentActivity() {
                     Row(
                         horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier
                             .fillMaxWidth()
+                            .background(MaterialTheme.colorScheme.background)
                             .padding(16.dp)
                     ) {
-                        FilledIconToggleButton(
-                            checked = checked,
-                            onCheckedChange = { checked = it }) {
-                            if (checked) {
+                        FilledIconButton(
+                            onClick = { darkTheme = !darkTheme }) {
+                            if (darkTheme) {
                                 Icon(
-                                    Icons.Filled.Lock,
+                                    Icons.Default.LightMode,
                                     contentDescription = "Localized description"
                                 )
                             } else {
                                 Icon(
-                                    Icons.Outlined.Lock,
+                                    Icons.Default.DarkMode,
                                     contentDescription = "Localized description"
                                 )
                             }
@@ -175,104 +191,116 @@ class MainActivity : ComponentActivity() {
                         }
                     }
 
+                    TabRow(selectedTabIndex = pagerState.currentPage,
+                        indicator = { positions ->
+                            TabRowDefaults.Indicator(
+                                modifier = Modifier.tabIndicatorOffset(
+                                    currentTabPosition = positions[pagerState.currentPage]
+                                )
+                            )
+                        }) {
+                        Tab(
+                            text = { Text("Today") },
+                            selected = pagerState.currentPage == 0,
+                            onClick = {
+                                scope.launch {
+                                    pagerState.animateScrollToPage(0)
+                                }
 
-                    TabRow(selectedTabIndex = tabIndex) {
-                        Tab(text = { Text("Today") }, selected = tabIndex == 0, onClick = {
-                            tabIndex = 0
-                            scope.launch {
-                                // Call scroll to on pagerState
-                                pagerState.animateScrollToPage(0)
-                            }
+                            })
 
-                        })
-
-                        Tab(text = { Text("Tomorrow") }, selected = tabIndex == 0, onClick = {
-                            tabIndex = 1
-                            scope.launch {
-                                // Call scroll to on pagerState
-                                pagerState.animateScrollToPage(1)
-                            }
-                        })
+                        Tab(
+                            text = { Text("Tomorrow") },
+                            selected = pagerState.currentPage == 0,
+                            onClick = {
+                                scope.launch {
+                                    pagerState.animateScrollToPage(1)
+                                }
+                            })
                     }
 
                     HorizontalPager(
                         state = pagerState,
                         pageCount = 2,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier
+                            .weight(1f)
+                            .background(MaterialTheme.colorScheme.background)
                     ) { tabIndex ->
                         when (tabIndex) {
                             0 ->
-                                LazyColumn(
-                                    modifier = Modifier.weight(1f)
-                                ) {
-                                    itemsIndexed(listToday) { index, listElement ->
-                                        Row(
-                                            modifier = Modifier
-                                                .padding(12.dp)
-                                                .fillMaxWidth()
-                                                .combinedClickable(
-                                                    onClick = {
-                                                        dbHandler.updateToDo(index, "today")
-                                                        listToday = dbHandler.getToDos("today")
-                                                    },
-                                                    onLongClick = {
-                                                        dbHandler.deleteToDo(index, "today")
-                                                        listToday = dbHandler.getToDos("today")
-                                                    }
-                                                )
-                                        ) {
-                                            if (listElement.isCompleted) {
-                                                Text(
-                                                    text = listElement.name,
-                                                    modifier = Modifier.padding(start = 10.dp),
-                                                    textDecoration = TextDecoration.LineThrough,
-                                                    color = Color.Gray
-                                                )
-                                            } else {
-                                                Text(
-                                                    text = listElement.name,
-                                                    modifier = Modifier.padding(start = 10.dp)
-                                                )
-                                            }
+                                Box(modifier = Modifier.fillMaxSize()) {
+                                    LazyColumn {
+                                        itemsIndexed(listToday) { index, listElement ->
+                                            Row(
+                                                modifier = Modifier
+                                                    .padding(12.dp)
+                                                    .fillMaxWidth()
+                                                    .combinedClickable(
+                                                        onClick = {
+                                                            dbHandler.updateToDo(index, "today")
+                                                            listToday = dbHandler.getToDos("today")
+                                                        },
+                                                        onLongClick = {
+                                                            dbHandler.deleteToDo(index, "today")
+                                                            listToday = dbHandler.getToDos("today")
+                                                        }
+                                                    )
+                                            ) {
+                                                if (listElement.isCompleted) {
+                                                    Text(
+                                                        text = listElement.name,
+                                                        modifier = Modifier.padding(start = 10.dp),
+                                                        textDecoration = TextDecoration.LineThrough,
+                                                        color = Color.Gray
+                                                    )
+                                                } else {
+                                                    Text(
+                                                        text = listElement.name,
+                                                        modifier = Modifier.padding(start = 10.dp),
+                                                        color = MaterialTheme.colorScheme.onBackground
+                                                    )
+                                                }
 
+                                            }
                                         }
                                     }
                                 }
 
                             1 ->
-                                LazyColumn(
-                                    modifier = Modifier.weight(1f)
-                                ) {
-                                    itemsIndexed(listTomorrow) { index, listElement ->
-                                        Row(
-                                            modifier = Modifier
-                                                .padding(12.dp)
-                                                .fillMaxWidth()
-                                                .combinedClickable(
-                                                    onClick = {
-                                                        dbHandler.updateToDo(index, "tomorrow")
-                                                        listTomorrow =
-                                                            dbHandler.getToDos("tomorrow")
-                                                    },
-                                                    onLongClick = {
-                                                        dbHandler.deleteToDo(index, "tomorrow")
-                                                        listTomorrow =
-                                                            dbHandler.getToDos("tomorrow")
-                                                    }
-                                                )
-                                        ) {
-                                            if (listElement.isCompleted) {
-                                                Text(
-                                                    text = listElement.name,
-                                                    modifier = Modifier.padding(start = 10.dp),
-                                                    textDecoration = TextDecoration.LineThrough,
-                                                    color = Color.Gray
-                                                )
-                                            } else {
-                                                Text(
-                                                    text = listElement.name,
-                                                    modifier = Modifier.padding(start = 10.dp)
-                                                )
+                                Box(modifier = Modifier.fillMaxSize()) {
+                                    LazyColumn {
+                                        itemsIndexed(listTomorrow) { index, listElement ->
+                                            Row(
+                                                modifier = Modifier
+                                                    .padding(12.dp)
+                                                    .fillMaxWidth()
+                                                    .combinedClickable(
+                                                        onClick = {
+                                                            dbHandler.updateToDo(index, "tomorrow")
+                                                            listTomorrow =
+                                                                dbHandler.getToDos("tomorrow")
+                                                        },
+                                                        onLongClick = {
+                                                            dbHandler.deleteToDo(index, "tomorrow")
+                                                            listTomorrow =
+                                                                dbHandler.getToDos("tomorrow")
+                                                        }
+                                                    )
+                                            ) {
+                                                if (listElement.isCompleted) {
+                                                    Text(
+                                                        text = listElement.name,
+                                                        modifier = Modifier.padding(start = 10.dp),
+                                                        textDecoration = TextDecoration.LineThrough,
+                                                        color = Color.Gray
+                                                    )
+                                                } else {
+                                                    Text(
+                                                        text = listElement.name,
+                                                        modifier = Modifier.padding(start = 10.dp),
+                                                        color = MaterialTheme.colorScheme.onBackground
+                                                    )
+                                                }
                                             }
                                         }
                                     }
@@ -283,6 +311,7 @@ class MainActivity : ComponentActivity() {
                     Row(
                         horizontalArrangement = Arrangement.Center, modifier = Modifier
                             .fillMaxWidth()
+                            .background(MaterialTheme.colorScheme.background)
                             .padding(16.dp)
                     ) {
                         Button(onClick = {

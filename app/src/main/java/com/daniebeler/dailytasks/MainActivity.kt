@@ -3,7 +3,6 @@ package com.daniebeler.dailytasks
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.KeyEvent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -40,12 +39,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -60,8 +57,7 @@ class MainActivity : ComponentActivity() {
     lateinit var dbHandler: DBHandler
 
     @OptIn(
-        ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class,
-        ExperimentalComposeUiApi::class
+        ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class
     )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,17 +90,15 @@ class MainActivity : ComponentActivity() {
 
             val pagerState = rememberPagerState()
 
-            var darkTheme by remember { mutableStateOf(false) }
+            var showSheet by remember { mutableStateOf(false) }
 
             DailyTasksTheme() {
-                if (sheetState.isVisible) {
+                if (showSheet) {
 
                     ModalBottomSheet(
                         sheetState = sheetState,
                         onDismissRequest = {
-                            scope.launch {
-                                sheetState.hide()
-                            }
+                            showSheet = false
                         },
                     ) {
                         Row(
@@ -140,8 +134,10 @@ class MainActivity : ComponentActivity() {
 
                                             listToday = dbHandler.getToDos("today")
                                             listTomorrow = dbHandler.getToDos("tomorrow")
-                                            scope.launch {
-                                                sheetState.hide()
+                                            scope.launch { sheetState.hide() }.invokeOnCompletion {
+                                                if (!sheetState.isVisible) {
+                                                    showSheet = false
+                                                }
                                             }
                                         }
                                     }
@@ -175,8 +171,10 @@ class MainActivity : ComponentActivity() {
 
                                     listToday = dbHandler.getToDos("today")
                                     listTomorrow = dbHandler.getToDos("tomorrow")
-                                    scope.launch {
-                                        sheetState.hide()
+                                    scope.launch { sheetState.hide() }.invokeOnCompletion {
+                                        if (!sheetState.isVisible) {
+                                            showSheet = false
+                                        }
                                     }
                                 }
                             }) {
@@ -336,9 +334,7 @@ class MainActivity : ComponentActivity() {
                             .padding(16.dp)
                     ) {
                         Button(onClick = {
-                            scope.launch {
-                                sheetState.show()
-                            }
+                            showSheet = true
                         }) {
                             Text("New task")
                         }

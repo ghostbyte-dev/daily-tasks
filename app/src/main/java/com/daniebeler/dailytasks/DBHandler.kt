@@ -6,9 +6,8 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
-import kotlin.collections.ArrayList
 
-class DBHandler(context: Context):SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION)  {
+class DBHandler(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION) {
     override fun onCreate(db: SQLiteDatabase) {
 
         val createToDoItemTable = "CREATE TABLE $TABLE_TODO_ITEM (" +
@@ -26,8 +25,8 @@ class DBHandler(context: Context):SQLiteOpenHelper(context, DB_NAME, null, DB_VE
 
     fun updateToDo(position: Int, date: String) {
         Log.d("state", "DBHandler: updating todo of $date")
-        val db:SQLiteDatabase = writableDatabase
-        val mutableList:MutableList<ToDoItem> = getToDos(date)
+        val db: SQLiteDatabase = writableDatabase
+        val mutableList: MutableList<ToDoItem> = getToDos(date)
 
         val data = ContentValues()
         data.put(COL_IS_COMPLETED, mutableList[position].isCompleted.not()).toString()
@@ -35,42 +34,49 @@ class DBHandler(context: Context):SQLiteOpenHelper(context, DB_NAME, null, DB_VE
         db.update(TABLE_TODO_ITEM, data, "$COL_ID=?", arrayOf(mutableList[position].id.toString()))
     }
 
-    fun addToDo(toDo: ToDoItem) : Boolean{
+    fun addToDo(toDo: ToDoItem): Boolean {
         Log.d("state", "DBHandler: inserting into db")
-        val db:SQLiteDatabase = writableDatabase
+        val db: SQLiteDatabase = writableDatabase
         val cv = ContentValues()
         cv.put(COL_NAME, toDo.name)
         cv.put(COL_CREATED_AT, toDo.date)
         cv.put(COL_IS_COMPLETED, false)
-        val result : Long = db.insert(TABLE_TODO_ITEM, null, cv)
+        val result: Long = db.insert(TABLE_TODO_ITEM, null, cv)
         Log.d("state", "DBHandler: inserted into db")
         return result != (-1).toLong()
     }
 
-    fun deleteToDo(position: Int, date: String){
-        val db:SQLiteDatabase = writableDatabase
-        val mutableList:MutableList<ToDoItem> = getToDos(date)
+    fun deleteToDo(position: Int, date: String) {
+        val db: SQLiteDatabase = writableDatabase
+        val mutableList: MutableList<ToDoItem> = getToDos(date)
         db.delete(TABLE_TODO_ITEM, "$COL_ID=?", arrayOf(mutableList[position].id.toString()))
     }
 
-    fun getToDos(date:String):MutableList<ToDoItem>{
+    fun getToDos(date: String): MutableList<ToDoItem> {
         Log.d("state", "DBHandler: getting todos of $date")
-        val result:MutableList<ToDoItem> = ArrayList()
+        val result: MutableList<ToDoItem> = ArrayList()
         val db = readableDatabase
-        val queryResult:Cursor = if(date == "today"){
-            db.rawQuery("SELECT * FROM $TABLE_TODO_ITEM WHERE $COL_CREATED_AT = date('now', 'localtime')", null)
-        } else{
-            db.rawQuery("SELECT * FROM $TABLE_TODO_ITEM WHERE $COL_CREATED_AT = date('now', '+1 day', 'localtime')", null)
+        val queryResult: Cursor = if (date == "today") {
+            db.rawQuery(
+                "SELECT * FROM $TABLE_TODO_ITEM WHERE $COL_CREATED_AT = date('now', 'localtime')",
+                null
+            )
+        } else {
+            db.rawQuery(
+                "SELECT * FROM $TABLE_TODO_ITEM WHERE $COL_CREATED_AT = date('now', '+1 day', 'localtime')",
+                null
+            )
         }
 
-        if(queryResult.moveToFirst()){
-            do{
+        if (queryResult.moveToFirst()) {
+            do {
                 val todo = ToDoItem()
                 todo.id = queryResult.getLong(queryResult.getColumnIndex(COL_ID))
                 todo.name = queryResult.getString(queryResult.getColumnIndex(COL_NAME))
-                todo.isCompleted = queryResult.getInt(queryResult.getColumnIndex(COL_IS_COMPLETED)) > 0
+                todo.isCompleted =
+                    queryResult.getInt(queryResult.getColumnIndex(COL_IS_COMPLETED)) > 0
                 result.add(todo)
-            }while (queryResult.moveToNext())
+            } while (queryResult.moveToNext())
         }
         queryResult.close()
         return result

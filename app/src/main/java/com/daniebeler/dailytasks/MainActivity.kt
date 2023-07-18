@@ -3,6 +3,7 @@ package com.daniebeler.dailytasks
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.KeyEvent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -19,13 +20,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DarkMode
-import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledIconButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Tab
@@ -42,10 +40,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.daniebeler.dailytasks.ui.theme.DailyTasksTheme
@@ -53,15 +54,21 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+
 class MainActivity : ComponentActivity() {
 
     lateinit var dbHandler: DBHandler
 
-    @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+    @OptIn(
+        ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class,
+        ExperimentalComposeUiApi::class
+    )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         dbHandler = DBHandler(this)
+
+
 
         setContent {
 
@@ -89,8 +96,7 @@ class MainActivity : ComponentActivity() {
 
             var darkTheme by remember { mutableStateOf(false) }
 
-
-            DailyTasksTheme(darkTheme = darkTheme) {
+            DailyTasksTheme() {
                 if (sheetState.isVisible) {
 
                     ModalBottomSheet(
@@ -109,15 +115,44 @@ class MainActivity : ComponentActivity() {
                                 value = modalTextValue, onValueChange = { newText ->
                                     modalTextValue = newText
                                 },
+
                                 modifier = Modifier
                                     .weight(1f)
                                     .focusRequester(focusRequester),
-                                colors = TextFieldDefaults.colors(
-                                    focusedContainerColor = Color.Transparent,
-                                    unfocusedContainerColor = Color.Transparent,
-                                    focusedIndicatorColor = Color.Transparent
-                                )
+                                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                                keyboardActions = KeyboardActions(
+                                    onDone = {
+                                        if (modalTextValue.isNotBlank()) {
+                                            val toDo = ToDoItem()
+                                            toDo.name = modalTextValue
 
+                                            if (pagerState.currentPage == 0) {
+                                                toDo.date = LocalDate.now()
+                                                    .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                                            } else {
+                                                toDo.date = LocalDate.now().plusDays(1)
+                                                    .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                                            }
+
+                                            dbHandler.addToDo(toDo)
+
+                                            modalTextValue = ""
+
+                                            listToday = dbHandler.getToDos("today")
+                                            listTomorrow = dbHandler.getToDos("tomorrow")
+                                            scope.launch {
+                                                sheetState.hide()
+                                            }
+                                        }
+                                    }
+                                )
+                            ,
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                focusedIndicatorColor = Color.Transparent
+                            ),
+                            singleLine = true
                             )
 
 
@@ -159,25 +194,11 @@ class MainActivity : ComponentActivity() {
                     Modifier.fillMaxSize()
                 ) {
                     Row(
-                        horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier
+                        horizontalArrangement = Arrangement.Center, modifier = Modifier
                             .fillMaxWidth()
                             .background(MaterialTheme.colorScheme.background)
                             .padding(16.dp)
                     ) {
-                        FilledIconButton(
-                            onClick = { darkTheme = !darkTheme }) {
-                            if (darkTheme) {
-                                Icon(
-                                    Icons.Default.LightMode,
-                                    contentDescription = "Localized description"
-                                )
-                            } else {
-                                Icon(
-                                    Icons.Default.DarkMode,
-                                    contentDescription = "Localized description"
-                                )
-                            }
-                        }
 
                         Button(onClick = {
                             startActivity(

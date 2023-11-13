@@ -26,6 +26,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
@@ -95,7 +96,7 @@ class MainActivity : ComponentActivity() {
             listToday = dbHandler.getToDos("today")
             listTomorrow = dbHandler.getToDos("tomorrow")
 
-            val pagerState = rememberPagerState()
+            val pagerState = rememberPagerState { 2 }
 
             var showSheet by remember { mutableStateOf(false) }
 
@@ -225,14 +226,15 @@ class MainActivity : ComponentActivity() {
                         }
                     }
 
-                    TabRow(selectedTabIndex = pagerState.currentPage,
-                        indicator = { positions ->
-                            TabRowDefaults.Indicator(
+                    PrimaryTabRow(selectedTabIndex = pagerState.currentPage,
+                        /*indicator = { positions ->
+                            TabRowDefaults.PrimaryIndicator(
                                 modifier = Modifier.tabIndicatorOffset(
                                     currentTabPosition = positions[pagerState.currentPage]
                                 )
                             )
-                        }) {
+                        }*/
+                    ) {
                         Tab(
                             text = { Text("Today") },
                             selected = pagerState.currentPage == 0,
@@ -255,7 +257,6 @@ class MainActivity : ComponentActivity() {
 
                     HorizontalPager(
                         state = pagerState,
-                        pageCount = 2,
                         modifier = Modifier
                             .weight(1f)
                             .background(MaterialTheme.colorScheme.background)

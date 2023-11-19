@@ -3,11 +3,9 @@ package com.daniebeler.dailytasks
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,7 +25,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.rounded.ShoppingCart
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -46,14 +43,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -86,6 +81,10 @@ class MainActivity : ComponentActivity() {
                 mutableStateOf("")
             }
 
+            var listOld by remember {
+                mutableStateOf(mutableListOf<ToDoItem>())
+            }
+
             var listToday by remember {
                 mutableStateOf(mutableListOf<ToDoItem>())
             }
@@ -98,6 +97,7 @@ class MainActivity : ComponentActivity() {
             val focusManager = LocalFocusManager.current
 
             listToday = dbHandler.getToDos("today")
+            listOld = dbHandler.getToDos("old")
             listTomorrow = dbHandler.getToDos("tomorrow")
 
             val pagerState = rememberPagerState { 2 }
@@ -201,7 +201,6 @@ class MainActivity : ComponentActivity() {
                         }
 
                         LaunchedEffect(key1 = Unit) {
-                            Log.d("swarox", "soos")
                             focusRequester.requestFocus()
                             keyboardController?.show()
                         }
@@ -268,7 +267,7 @@ class MainActivity : ComponentActivity() {
                         when (tabIndex) {
                             0 ->
                                 Box(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-                                    if (listToday.isEmpty()) {
+                                    if (listToday.isEmpty() && listOld.isEmpty()) {
                                         Icon(
                                             Icons.Default.Done,
                                             contentDescription = "Shopping Cart",
@@ -278,6 +277,43 @@ class MainActivity : ComponentActivity() {
                                     }
                                     else {
                                         LazyColumn {
+                                            itemsIndexed(listOld) { index, listElement ->
+                                                Row(
+                                                    modifier = Modifier
+                                                        .padding(12.dp)
+                                                        .fillMaxWidth()
+                                                        .combinedClickable(
+                                                            onClick = {
+                                                                dbHandler.updateToDo(index, "old")
+                                                                listOld =
+                                                                    dbHandler.getToDos("old")
+                                                            },
+                                                            onLongClick = {
+                                                                dbHandler.deleteToDo(index, "old")
+                                                                listOld =
+                                                                    dbHandler.getToDos("old")
+                                                            }
+                                                        )
+                                                ) {
+                                                    if (listElement.isCompleted) {
+                                                        Text(
+                                                            text = listElement.name,
+                                                            modifier = Modifier.padding(start = 10.dp),
+                                                            textDecoration = TextDecoration.LineThrough,
+                                                            color = Color.Gray
+                                                        )
+                                                    } else {
+                                                        Text(
+                                                            text = listElement.name,
+                                                            modifier = Modifier.padding(start = 10.dp),
+                                                            color = Color.Red
+                                                        )
+                                                    }
+
+                                                }
+                                            }
+
+
                                             itemsIndexed(listToday) { index, listElement ->
                                                 Row(
                                                     modifier = Modifier

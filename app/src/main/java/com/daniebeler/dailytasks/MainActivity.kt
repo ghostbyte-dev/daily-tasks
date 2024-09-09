@@ -52,6 +52,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import com.daniebeler.dailytasks.ui.composables.IvyLeeRow
 import com.daniebeler.dailytasks.ui.theme.DailyTasksTheme
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -210,24 +211,7 @@ class MainActivity : ComponentActivity() {
                 Column(
                     Modifier.fillMaxSize()
                 ) {
-                    Row(
-                        horizontalArrangement = Arrangement.Center, modifier = Modifier
-                            .fillMaxWidth()
-                            .background(MaterialTheme.colorScheme.background)
-                            .padding(16.dp)
-                    ) {
-
-                        Button(onClick = {
-                            startActivity(
-                                Intent(
-                                    Intent.ACTION_VIEW,
-                                    Uri.parse("https://jamesclear.com/ivy-lee")
-                                )
-                            )
-                        }) {
-                            Text(text = "The Ivy Lee Method")
-                        }
-                    }
+                    IvyLeeRow()
 
                     PrimaryTabRow(selectedTabIndex = pagerState.currentPage,
                         /*indicator = { positions ->

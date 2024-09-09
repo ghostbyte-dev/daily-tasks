@@ -11,7 +11,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.daniebeler.dailytasks.R
 
 @Composable
 fun IvyLeeRow() {
@@ -28,7 +30,7 @@ fun IvyLeeRow() {
         Button(onClick = {
             uriHandler.openUri("https://jamesclear.com/ivy-lee")
         }) {
-            Text(text = "The Ivy Lee Method")
+            Text(text = stringResource(R.string.the_ivy_lee_method))
         }
     }
 }

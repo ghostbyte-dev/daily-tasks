@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Daily Tasks</string>
+    <string name="tomorrow">Morgen</string>
+    <string name="today">Heute</string>
+    <string name="the_ivy_lee_method">Die Ivy Lee Methode</string>
+    <string name="new_task">Neue Aufgabe</string>
+    <string name="save">Speichern</string>
+</resources>

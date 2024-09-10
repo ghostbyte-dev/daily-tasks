@@ -32,11 +32,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "21"
+        jvmTarget = "17"
     }
 
 }
@@ -55,11 +55,18 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    implementation(libs.androidx.hilt.work)
     implementation(libs.dagger.hilt)
+    implementation(libs.hilt.naviation)
+    implementation(libs.androidx.work.runtime.ktx)
     ksp(libs.dagger.hilt.compiler)
 
     // Preferences DataStore
     implementation(libs.androidx.datastore.preferences)
+
+    implementation (libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
 
     implementation(libs.accompanist.systemuicontroller)
 }

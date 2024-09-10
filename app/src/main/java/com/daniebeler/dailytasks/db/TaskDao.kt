@@ -12,5 +12,8 @@ interface TaskDao {
     suspend fun insertTask(task: Task)
 
     @Query("SELECT * FROM tasks")
-    suspend fun getAllTasks(): List<Task>
+    suspend fun getTasksOfToday(): List<Task>
+
+    @Query("SELECT * FROM tasks")
+    suspend fun getTasksOfTomorrow(): List<Task>
 }

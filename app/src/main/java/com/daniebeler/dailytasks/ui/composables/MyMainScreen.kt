@@ -52,6 +52,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.daniebeler.dailytasks.R
 import com.daniebeler.dailytasks.ToDoItem
+import com.daniebeler.dailytasks.db.Task
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -102,18 +105,15 @@ fun MyMainScreen(viewModel: MainScreenViewModel = hiltViewModel(key = "12")) {
                     keyboardActions = KeyboardActions(onDone = {
                         if (modalTextValue.isNotBlank()) {
                             keyboardController?.hide()
-                            val toDo = ToDoItem()
-                            toDo.name = modalTextValue
-
-                            if (pagerState.currentPage == 0) {
-                                toDo.date = LocalDate.now()
-                                    .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-                            } else {
-                                toDo.date = LocalDate.now().plusDays(1)
-                                    .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                            var date = LocalDate.now().toEpochDay()
+                            if (pagerState.currentPage == 1) {
+                                date++
                             }
+                            val newTask = Task(0, date,  modalTextValue, false)
 
-                            //dbHandler.addToDo(toDo)
+                            CoroutineScope(Dispatchers.Default).launch {
+                                viewModel.storeNewTask(newTask)
+                            }
 
                             modalTextValue = ""
 

@@ -27,6 +27,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.PrimaryTabRow
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -109,7 +110,7 @@ fun MyMainScreen(viewModel: MainScreenViewModel = hiltViewModel(key = "12")) {
                             if (pagerState.currentPage == 1) {
                                 date++
                             }
-                            val newTask = Task(0, date,  modalTextValue, false)
+                            val newTask = Task(0, date, modalTextValue, false)
 
                             CoroutineScope(Dispatchers.Default).launch {
                                 viewModel.storeNewTask(newTask)
@@ -142,7 +143,7 @@ fun MyMainScreen(viewModel: MainScreenViewModel = hiltViewModel(key = "12")) {
                         if (pagerState.currentPage == 1) {
                             date++
                         }
-                        val newTask = Task(0, date,  modalTextValue, false)
+                        val newTask = Task(0, date, modalTextValue, false)
 
                         CoroutineScope(Dispatchers.Default).launch {
                             viewModel.storeNewTask(newTask)
@@ -171,143 +172,153 @@ fun MyMainScreen(viewModel: MainScreenViewModel = hiltViewModel(key = "12")) {
         }
     }
 
-    Column(
-        Modifier.fillMaxSize()
-    ) {
-        IvyLeeRow()
+    Scaffold(content = { paddingValues ->
+        Box(Modifier.padding(paddingValues)) {
+            Column(
+                Modifier.fillMaxSize()
+            ) {
+                IvyLeeRow()
 
-        PrimaryTabRow(
-            selectedTabIndex = pagerState.currentPage
-        ) {
-            Tab(text = { Text(stringResource(R.string.today)) },
-                selected = pagerState.currentPage == 0,
-                onClick = {
-                    scope.launch {
-                        pagerState.animateScrollToPage(0)
-                    }
-
-                })
-
-            Tab(text = { Text(stringResource(R.string.tomorrow)) },
-                selected = pagerState.currentPage == 0,
-                onClick = {
-                    scope.launch {
-                        pagerState.animateScrollToPage(1)
-                    }
-                })
-        }
-
-        HorizontalPager(
-            state = pagerState,
-            modifier = Modifier
-                .weight(1f)
-                .background(MaterialTheme.colorScheme.background)
-        ) { tabIndex ->
-            when (tabIndex) {
-                0 -> Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
+                PrimaryTabRow(
+                    selectedTabIndex = pagerState.currentPage
                 ) {
-                    if (viewModel.listToday.isEmpty() && viewModel.listOld.isEmpty()) {
-                        Icon(
-                            Icons.Default.Done,
-                            contentDescription = "Shopping Cart",
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                                .size(64.dp),
-                            tint = MaterialTheme.colorScheme.onBackground
-                        )
-                    } else {
-                        LazyColumn {
-                            items(viewModel.listToday) { listElement ->
-                                Row(
-                                    modifier = Modifier
-                                        .padding(12.dp)
-                                        .fillMaxWidth()
-                                        .combinedClickable(onClick = {
-                                            viewModel.updateTask(listElement.id, !listElement.isCompleted)
-                                            //listToday = dbHandler.getToDos("today")
-                                        }, onLongClick = {
-                                            //dbHandler.deleteToDo(index, "today")
-                                            //listToday = dbHandler.getToDos("today")
-                                        })
-                                ) {
-                                    if (listElement.isCompleted) {
-                                        Text(
-                                            text = listElement.name,
-                                            modifier = Modifier.padding(start = 10.dp),
-                                            textDecoration = TextDecoration.LineThrough,
-                                            color = Color.Gray
-                                        )
-                                    } else {
-                                        Text(
-                                            text = listElement.name,
-                                            modifier = Modifier.padding(start = 10.dp),
-                                            color = MaterialTheme.colorScheme.onBackground
-                                        )
-                                    }
-
-                                }
+                    Tab(text = { Text(stringResource(R.string.today)) },
+                        selected = pagerState.currentPage == 0,
+                        onClick = {
+                            scope.launch {
+                                pagerState.animateScrollToPage(0)
                             }
-                        }
-                    }
 
+                        })
+
+                    Tab(text = { Text(stringResource(R.string.tomorrow)) },
+                        selected = pagerState.currentPage == 0,
+                        onClick = {
+                            scope.launch {
+                                pagerState.animateScrollToPage(1)
+                            }
+                        })
                 }
 
-                1 -> Box(
+                HorizontalPager(
+                    state = pagerState,
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
-                ) {
-                    if (viewModel.listTomorrow.isEmpty()) {
-                        Icon(
-                            Icons.Default.Add,
-                            contentDescription = "Shopping Cart",
+                        .weight(1f)
+                        .background(MaterialTheme.colorScheme.background)
+                ) { tabIndex ->
+                    when (tabIndex) {
+                        0 -> Box(
                             modifier = Modifier
-                                .align(Alignment.Center)
-                                .size(64.dp),
-                            tint = MaterialTheme.colorScheme.onBackground
-                        )
-                    } else {
-                        LazyColumn {
-                            itemsIndexed(viewModel.listTomorrow) { index, listElement ->
-                                Row(
+                                .fillMaxSize()
+                                .padding(16.dp)
+                        ) {
+                            if (viewModel.listToday.isEmpty() && viewModel.listOld.isEmpty()) {
+                                Icon(
+                                    Icons.Default.Done,
+                                    contentDescription = "Shopping Cart",
                                     modifier = Modifier
-                                        .padding(12.dp)
-                                        .fillMaxWidth()
-                                        .combinedClickable(onClick = {
-                                            //dbHandler.updateToDo( index, "tomorrow" )
-                                            //listTomorrow = dbHandler.getToDos("tomorrow")
-                                        }, onLongClick = {
-                                            //dbHandler.deleteToDo(index, "tomorrow")
-                                            //listTomorrow = dbHandler.getToDos("tomorrow")
-                                        })
-                                ) {
-                                    if (listElement.isCompleted) {
-                                        Text(
-                                            text = listElement.name,
-                                            modifier = Modifier.padding(start = 10.dp),
-                                            textDecoration = TextDecoration.LineThrough,
-                                            color = Color.Gray
-                                        )
-                                    } else {
-                                        Text(
-                                            text = listElement.name,
-                                            modifier = Modifier.padding(start = 10.dp),
-                                            color = MaterialTheme.colorScheme.onBackground
-                                        )
+                                        .align(Alignment.Center)
+                                        .size(64.dp),
+                                    tint = MaterialTheme.colorScheme.onBackground
+                                )
+                            } else {
+                                LazyColumn {
+                                    items(viewModel.listToday) { listElement ->
+                                        Row(
+                                            modifier = Modifier
+                                                .padding(12.dp)
+                                                .fillMaxWidth()
+                                                .combinedClickable(onClick = {
+                                                    viewModel.updateTask(
+                                                        listElement.id, !listElement.isCompleted
+                                                    )
+                                                    //viewModel.loadData()
+                                                    //listToday = dbHandler.getToDos("today")
+                                                }, onLongClick = {
+                                                    //dbHandler.deleteToDo(index, "today")
+                                                    //listToday = dbHandler.getToDos("today")
+                                                })
+                                        ) {
+                                            if (listElement.isCompleted) {
+                                                Text(
+                                                    text = listElement.name,
+                                                    modifier = Modifier.padding(start = 10.dp),
+                                                    textDecoration = TextDecoration.LineThrough,
+                                                    color = Color.Gray
+                                                )
+                                            } else {
+                                                Text(
+                                                    text = listElement.name,
+                                                    modifier = Modifier.padding(start = 10.dp),
+                                                    color = MaterialTheme.colorScheme.onBackground
+                                                )
+                                            }
+
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+
+                        1 -> Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp)
+                        ) {
+                            if (viewModel.listTomorrow.isEmpty()) {
+                                Icon(
+                                    Icons.Default.Add,
+                                    contentDescription = "Shopping Cart",
+                                    modifier = Modifier
+                                        .align(Alignment.Center)
+                                        .size(64.dp),
+                                    tint = MaterialTheme.colorScheme.onBackground
+                                )
+                            } else {
+                                LazyColumn {
+                                    itemsIndexed(viewModel.listTomorrow) { index, listElement ->
+                                        Row(
+                                            modifier = Modifier
+                                                .padding(12.dp)
+                                                .fillMaxWidth()
+                                                .combinedClickable(onClick = {
+                                                    //dbHandler.updateToDo( index, "tomorrow" )
+                                                    //listTomorrow = dbHandler.getToDos("tomorrow")
+                                                }, onLongClick = {
+                                                    //dbHandler.deleteToDo(index, "tomorrow")
+                                                    //listTomorrow = dbHandler.getToDos("tomorrow")
+                                                })
+                                        ) {
+                                            if (listElement.isCompleted) {
+                                                Text(
+                                                    text = listElement.name,
+                                                    modifier = Modifier.padding(start = 10.dp),
+                                                    textDecoration = TextDecoration.LineThrough,
+                                                    color = Color.Gray
+                                                )
+                                            } else {
+                                                Text(
+                                                    text = listElement.name,
+                                                    modifier = Modifier.padding(start = 10.dp),
+                                                    color = MaterialTheme.colorScheme.onBackground
+                                                )
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
                     }
+                }
+
+                NewTaskButtonRow {
+                    showSheet = true
                 }
             }
         }
 
-        NewTaskButtonRow {
-            showSheet = true
-        }
-    }
+    })
+
+
 }

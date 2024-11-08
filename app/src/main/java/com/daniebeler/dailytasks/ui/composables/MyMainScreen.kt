@@ -172,7 +172,8 @@ fun MyMainScreen(viewModel: MainScreenViewModel = hiltViewModel(key = "12")) {
         }
     }
 
-    Scaffold(content = { paddingValues ->
+    Scaffold(
+        content = { paddingValues ->
         Box(Modifier.padding(paddingValues)) {
             Column(
                 Modifier.fillMaxSize()

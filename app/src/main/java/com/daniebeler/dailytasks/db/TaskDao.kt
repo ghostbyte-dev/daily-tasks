@@ -11,9 +11,10 @@ interface TaskDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTask(task: Task)
 
-    @Query("SELECT * FROM tasks")
-    suspend fun getTasksOfToday(): List<Task>
 
-    @Query("SELECT * FROM tasks")
-    suspend fun getTasksOfTomorrow(): List<Task>
+    @Query("SELECT * FROM tasks WHERE date = :day")
+    suspend fun getTasksFromDay(day: Long): List<Task>
+
+    @Query("UPDATE tasks SET isCompleted = :isCompleted WHERE id = :id")
+    suspend fun updateTask(id: Long, isCompleted: Boolean)
 }

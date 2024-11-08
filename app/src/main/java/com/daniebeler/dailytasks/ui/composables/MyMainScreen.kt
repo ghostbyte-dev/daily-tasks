@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -51,7 +52,6 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.daniebeler.dailytasks.R
-import com.daniebeler.dailytasks.ToDoItem
 import com.daniebeler.dailytasks.db.Task
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -138,18 +138,15 @@ fun MyMainScreen(viewModel: MainScreenViewModel = hiltViewModel(key = "12")) {
 
                 Button(onClick = {
                     if (modalTextValue.isNotBlank()) {
-                        val toDo = ToDoItem()
-                        toDo.name = modalTextValue
-
-                        if (pagerState.currentPage == 0) {
-                            toDo.date =
-                                LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-                        } else {
-                            toDo.date = LocalDate.now().plusDays(1)
-                                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                        var date = LocalDate.now().toEpochDay()
+                        if (pagerState.currentPage == 1) {
+                            date++
                         }
+                        val newTask = Task(0, date,  modalTextValue, false)
 
-                        //dbHandler.addToDo(toDo)
+                        CoroutineScope(Dispatchers.Default).launch {
+                            viewModel.storeNewTask(newTask)
+                        }
 
                         modalTextValue = ""
 
@@ -223,45 +220,13 @@ fun MyMainScreen(viewModel: MainScreenViewModel = hiltViewModel(key = "12")) {
                         )
                     } else {
                         LazyColumn {
-                            itemsIndexed(viewModel.listOld) { index, listElement ->
+                            items(viewModel.listToday) { listElement ->
                                 Row(
                                     modifier = Modifier
                                         .padding(12.dp)
                                         .fillMaxWidth()
                                         .combinedClickable(onClick = {
-                                            //dbHandler.updateToDo(index, "old")
-                                            //listOld = dbHandler.getToDos("old")
-                                        }, onLongClick = {
-                                            //dbHandler.deleteToDo(index, "old")
-                                            //listOld = dbHandler.getToDos("old")
-                                        })
-                                ) {
-                                    if (listElement.isCompleted) {
-                                        Text(
-                                            text = listElement.name,
-                                            modifier = Modifier.padding(start = 10.dp),
-                                            textDecoration = TextDecoration.LineThrough,
-                                            color = Color.Gray
-                                        )
-                                    } else {
-                                        Text(
-                                            text = listElement.name,
-                                            modifier = Modifier.padding(start = 10.dp),
-                                            color = Color.Red
-                                        )
-                                    }
-
-                                }
-                            }
-
-
-                            itemsIndexed(viewModel.listToday) { index, listElement ->
-                                Row(
-                                    modifier = Modifier
-                                        .padding(12.dp)
-                                        .fillMaxWidth()
-                                        .combinedClickable(onClick = {
-                                            //dbHandler.updateToDo(index, "today")
+                                            viewModel.updateTask(listElement.id, !listElement.isCompleted)
                                             //listToday = dbHandler.getToDos("today")
                                         }, onLongClick = {
                                             //dbHandler.deleteToDo(index, "today")

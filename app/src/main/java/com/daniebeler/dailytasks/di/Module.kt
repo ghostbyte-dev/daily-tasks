@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.daniebeler.dailytasks.db.AppDatabase
 import com.daniebeler.dailytasks.db.TaskDao
+import com.daniebeler.dailytasks.utils.DB_NAME
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,9 +18,10 @@ class Module {
 
     @Singleton
     @Provides
-    fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase = Room.databaseBuilder(
-        context, AppDatabase::class.java, "task_database")
-        .build()
+    fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase =
+        Room.databaseBuilder(
+            context, AppDatabase::class.java, DB_NAME
+        ).build()
 
     @Provides
     fun providePlantDao(appDatabase: AppDatabase): TaskDao {

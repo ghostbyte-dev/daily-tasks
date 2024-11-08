@@ -1,7 +1,6 @@
 package com.daniebeler.dailytasks.ui.composables
 
 import androidx.lifecycle.ViewModel
-import com.daniebeler.dailytasks.ToDoItem
 import com.daniebeler.dailytasks.db.Task
 import com.daniebeler.dailytasks.repository.TaskRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,6 +29,21 @@ class MainScreenViewModel @Inject constructor(
 
     suspend fun storeNewTask(task: Task) {
         taskRepository.storeTask(task)
+    }
+
+    fun updateTask(id: Long, isCompleted: Boolean) {
+        CoroutineScope(Dispatchers.Default).launch {
+            taskRepository.updateTask(id, isCompleted)
+            listToday.find { it.id == id }?.isCompleted = isCompleted
+            listTomorrow.find { it.id == id }?.isCompleted = isCompleted
+        }
+    }
+
+    fun loadData() {
+        CoroutineScope(Dispatchers.Default).launch {
+            listToday = taskRepository.getTasksOfToday().toMutableList()
+            listTomorrow = taskRepository.getTasksOfTomorrow().toMutableList()
+        }
     }
 
 }

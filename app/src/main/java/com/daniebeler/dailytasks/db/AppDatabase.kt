@@ -2,10 +2,9 @@ package com.daniebeler.dailytasks.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
+import com.daniebeler.dailytasks.utils.DB_VERSION
 
-//@TypeConverters(Converters::class)
-@Database(entities = [Task::class], version = 2)
+@Database(entities = [Task::class], version = DB_VERSION)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun taskDao(): TaskDao
 }

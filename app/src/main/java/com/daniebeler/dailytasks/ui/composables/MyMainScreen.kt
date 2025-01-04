@@ -108,7 +108,7 @@ fun MyMainScreen(viewModel: MainScreenViewModel = hiltViewModel(key = "12")) {
                             if (pagerState.currentPage == 1) {
                                 date++
                             }
-                            val newTask = Task(0, date, modalTextValue, false)
+                            val newTask = Task(0, date, date, modalTextValue, false)
 
                             CoroutineScope(Dispatchers.Default).launch {
                                 viewModel.storeNewTask(newTask)
@@ -139,7 +139,7 @@ fun MyMainScreen(viewModel: MainScreenViewModel = hiltViewModel(key = "12")) {
                         if (pagerState.currentPage == 1) {
                             date++
                         }
-                        val newTask = Task(0, date, modalTextValue, false)
+                        val newTask = Task(0, date, date, modalTextValue, false)
 
                         CoroutineScope(Dispatchers.Default).launch {
                             viewModel.storeNewTask(newTask)
@@ -218,39 +218,78 @@ fun MyMainScreen(viewModel: MainScreenViewModel = hiltViewModel(key = "12")) {
                                     tint = MaterialTheme.colorScheme.onBackground
                                 )
                             } else {
-                                LazyColumn {
-                                    items(viewModel.listToday.value) { listElement ->
-                                        Row(
-                                            modifier = Modifier
-                                                .padding(12.dp)
-                                                .fillMaxWidth()
-                                                .combinedClickable(onClick = {
-                                                    CoroutineScope(Dispatchers.Default).launch {
+                                Column {
 
-                                                        viewModel.updateTask(
-                                                            listElement.id, !listElement.isCompleted
-                                                        )
-                                                    }
+                                    LazyColumn {
+                                        items(viewModel.listOld.value) { listElement ->
+                                            Row(
+                                                modifier = Modifier
+                                                    .padding(12.dp)
+                                                    .fillMaxWidth()
+                                                    .combinedClickable(onClick = {
+                                                        CoroutineScope(Dispatchers.Default).launch {
 
-                                                }, onLongClick = {
-                                                    viewModel.deleteTask(listElement.id)
-                                                })
-                                        ) {
-                                            if (listElement.isCompleted) {
-                                                Text(
-                                                    text = listElement.name,
-                                                    modifier = Modifier.padding(start = 10.dp),
-                                                    textDecoration = TextDecoration.LineThrough,
-                                                    color = Color.Gray
-                                                )
-                                            } else {
-                                                Text(
-                                                    text = listElement.name,
-                                                    modifier = Modifier.padding(start = 10.dp),
-                                                    color = MaterialTheme.colorScheme.onBackground
-                                                )
+                                                            viewModel.updateTask(
+                                                                listElement.id, !listElement.isCompleted
+                                                            )
+                                                        }
+
+                                                    }, onLongClick = {
+                                                        viewModel.deleteTask(listElement.id)
+                                                    })
+                                            ) {
+                                                if (listElement.isCompleted) {
+                                                    Text(
+                                                        text = listElement.name,
+                                                        modifier = Modifier.padding(start = 10.dp),
+                                                        textDecoration = TextDecoration.LineThrough,
+                                                        color = MaterialTheme.colorScheme.error
+                                                    )
+                                                } else {
+                                                    Text(
+                                                        text = listElement.name,
+                                                        modifier = Modifier.padding(start = 10.dp),
+                                                        color = MaterialTheme.colorScheme.error
+                                                    )
+                                                }
+
                                             }
+                                        }
+                                    }
+                                    LazyColumn {
+                                        items(viewModel.listToday.value) { listElement ->
+                                            Row(
+                                                modifier = Modifier
+                                                    .padding(12.dp)
+                                                    .fillMaxWidth()
+                                                    .combinedClickable(onClick = {
+                                                        CoroutineScope(Dispatchers.Default).launch {
 
+                                                            viewModel.updateTask(
+                                                                listElement.id, !listElement.isCompleted
+                                                            )
+                                                        }
+
+                                                    }, onLongClick = {
+                                                        viewModel.deleteTask(listElement.id)
+                                                    })
+                                            ) {
+                                                if (listElement.isCompleted) {
+                                                    Text(
+                                                        text = listElement.name,
+                                                        modifier = Modifier.padding(start = 10.dp),
+                                                        textDecoration = TextDecoration.LineThrough,
+                                                        color = Color.Gray
+                                                    )
+                                                } else {
+                                                    Text(
+                                                        text = listElement.name,
+                                                        modifier = Modifier.padding(start = 10.dp),
+                                                        color = MaterialTheme.colorScheme.onBackground
+                                                    )
+                                                }
+
+                                            }
                                         }
                                     }
                                 }

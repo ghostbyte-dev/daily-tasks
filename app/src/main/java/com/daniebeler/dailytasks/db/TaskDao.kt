@@ -18,8 +18,11 @@ interface TaskDao {
     @Query("SELECT * FROM tasks WHERE date = :day")
     suspend fun getTasksFromDay(day: Long): List<Task>
 
-    @Query("UPDATE tasks SET isCompleted = :isCompleted WHERE id = :id")
-    suspend fun updateTask(id: Long, isCompleted: Boolean)
+    @Query("SELECT * FROM tasks WHERE (date < :today AND lastInteracted = :today AND isCompleted) OR (not isCompleted AND date < :today)")
+    suspend fun getExpiredTasks(today: Long): List<Task>
+
+    @Query("UPDATE tasks SET lastInteracted = :lastInteracted, isCompleted = :isCompleted WHERE id = :id")
+    suspend fun updateTask(id: Long, isCompleted: Boolean, lastInteracted: Long)
 
     @Delete()
     suspend fun deleteTask(task: Task)

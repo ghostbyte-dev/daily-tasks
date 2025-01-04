@@ -25,7 +25,7 @@ class MainScreenViewModel @Inject constructor(
 
     init {
         CoroutineScope(Dispatchers.Default).launch {
-            taskRepository.storeTask(Task(0, LocalDate.now().toEpochDay(), "fief", false))
+            taskRepository.storeTask(Task(0, LocalDate.now().toEpochDay(), LocalDate.now().toEpochDay(),"fief", false))
             loadData()
         }
     }
@@ -50,6 +50,7 @@ class MainScreenViewModel @Inject constructor(
     private suspend fun loadData() {
         listToday.value = taskRepository.getTasksOfToday()
         listTomorrow.value = taskRepository.getTasksOfTomorrow()
+        listOld.value = taskRepository.getExpiredTasks()
     }
 
 }

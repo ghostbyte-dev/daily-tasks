@@ -24,4 +24,11 @@ class TaskRepository @Inject constructor(
     suspend fun updateTask(id: Long, isCompleted: Boolean) {
         taskDao.updateTask(id, isCompleted)
     }
+
+    suspend fun deleteTask(id: Long) {
+        val taskToDelete = taskDao.getTaskById(id)
+        taskToDelete?.let {
+            taskDao.deleteTask(taskToDelete)
+        }
+    }
 }

@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.text.KeyboardActions
@@ -58,7 +57,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -118,8 +116,6 @@ fun MyMainScreen(viewModel: MainScreenViewModel = hiltViewModel(key = "12")) {
 
                             modalTextValue = ""
 
-                            //listToday = dbHandler.getToDos("today")
-                            //listTomorrow = dbHandler.getToDos("tomorrow")
                             scope.launch { sheetState.hide() }.invokeOnCompletion {
                                 if (!sheetState.isVisible) {
                                     focusManager.clearFocus()
@@ -172,8 +168,7 @@ fun MyMainScreen(viewModel: MainScreenViewModel = hiltViewModel(key = "12")) {
         }
     }
 
-    Scaffold(
-        content = { paddingValues ->
+    Scaffold(content = { paddingValues ->
         Box(Modifier.padding(paddingValues)) {
             Column(
                 Modifier.fillMaxSize()
@@ -213,7 +208,7 @@ fun MyMainScreen(viewModel: MainScreenViewModel = hiltViewModel(key = "12")) {
                                 .fillMaxSize()
                                 .padding(16.dp)
                         ) {
-                            if (viewModel.listToday.isEmpty() && viewModel.listOld.isEmpty()) {
+                            if (viewModel.listToday.value.isEmpty() && viewModel.listOld.value.isEmpty()) {
                                 Icon(
                                     Icons.Default.Done,
                                     contentDescription = "Shopping Cart",
@@ -224,20 +219,21 @@ fun MyMainScreen(viewModel: MainScreenViewModel = hiltViewModel(key = "12")) {
                                 )
                             } else {
                                 LazyColumn {
-                                    items(viewModel.listToday) { listElement ->
+                                    items(viewModel.listToday.value) { listElement ->
                                         Row(
                                             modifier = Modifier
                                                 .padding(12.dp)
                                                 .fillMaxWidth()
                                                 .combinedClickable(onClick = {
-                                                    viewModel.updateTask(
-                                                        listElement.id, !listElement.isCompleted
-                                                    )
-                                                    //viewModel.loadData()
-                                                    //listToday = dbHandler.getToDos("today")
+                                                    CoroutineScope(Dispatchers.Default).launch {
+
+                                                        viewModel.updateTask(
+                                                            listElement.id, !listElement.isCompleted
+                                                        )
+                                                    }
+
                                                 }, onLongClick = {
-                                                    //dbHandler.deleteToDo(index, "today")
-                                                    //listToday = dbHandler.getToDos("today")
+                                                    viewModel.deleteTask(listElement.id)
                                                 })
                                         ) {
                                             if (listElement.isCompleted) {
@@ -259,7 +255,6 @@ fun MyMainScreen(viewModel: MainScreenViewModel = hiltViewModel(key = "12")) {
                                     }
                                 }
                             }
-
                         }
 
                         1 -> Box(
@@ -267,7 +262,7 @@ fun MyMainScreen(viewModel: MainScreenViewModel = hiltViewModel(key = "12")) {
                                 .fillMaxSize()
                                 .padding(16.dp)
                         ) {
-                            if (viewModel.listTomorrow.isEmpty()) {
+                            if (viewModel.listTomorrow.value.isEmpty()) {
                                 Icon(
                                     Icons.Default.Add,
                                     contentDescription = "Shopping Cart",
@@ -278,17 +273,21 @@ fun MyMainScreen(viewModel: MainScreenViewModel = hiltViewModel(key = "12")) {
                                 )
                             } else {
                                 LazyColumn {
-                                    itemsIndexed(viewModel.listTomorrow) { index, listElement ->
+                                    items(viewModel.listTomorrow.value) { listElement ->
                                         Row(
                                             modifier = Modifier
                                                 .padding(12.dp)
                                                 .fillMaxWidth()
                                                 .combinedClickable(onClick = {
-                                                    //dbHandler.updateToDo( index, "tomorrow" )
-                                                    //listTomorrow = dbHandler.getToDos("tomorrow")
+                                                    CoroutineScope(Dispatchers.Default).launch {
+
+                                                        viewModel.updateTask(
+                                                            listElement.id, !listElement.isCompleted
+                                                        )
+                                                    }
+
                                                 }, onLongClick = {
-                                                    //dbHandler.deleteToDo(index, "tomorrow")
-                                                    //listTomorrow = dbHandler.getToDos("tomorrow")
+                                                    viewModel.deleteTask(listElement.id)
                                                 })
                                         ) {
                                             if (listElement.isCompleted) {
@@ -305,6 +304,7 @@ fun MyMainScreen(viewModel: MainScreenViewModel = hiltViewModel(key = "12")) {
                                                     color = MaterialTheme.colorScheme.onBackground
                                                 )
                                             }
+
                                         }
                                     }
                                 }

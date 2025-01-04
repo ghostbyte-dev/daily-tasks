@@ -25,7 +25,6 @@ class MainScreenViewModel @Inject constructor(
 
     init {
         CoroutineScope(Dispatchers.Default).launch {
-            taskRepository.storeTask(Task(0, LocalDate.now().toEpochDay(), LocalDate.now().toEpochDay(),"fief", false))
             loadData()
         }
     }

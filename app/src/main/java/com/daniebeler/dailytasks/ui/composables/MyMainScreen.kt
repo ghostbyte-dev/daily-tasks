@@ -219,77 +219,38 @@ fun MyMainScreen(viewModel: MainScreenViewModel = hiltViewModel(key = "12")) {
                                 )
                             } else {
                                 Column {
-
                                     LazyColumn {
                                         items(viewModel.listOld.value) { listElement ->
-                                            Row(
-                                                modifier = Modifier
-                                                    .padding(12.dp)
-                                                    .fillMaxWidth()
-                                                    .combinedClickable(onClick = {
-                                                        CoroutineScope(Dispatchers.Default).launch {
-
-                                                            viewModel.updateTask(
-                                                                listElement.id, !listElement.isCompleted
-                                                            )
-                                                        }
-
-                                                    }, onLongClick = {
-                                                        viewModel.deleteTask(listElement.id)
-                                                    })
-                                            ) {
-                                                if (listElement.isCompleted) {
-                                                    Text(
-                                                        text = listElement.name,
-                                                        modifier = Modifier.padding(start = 10.dp),
-                                                        textDecoration = TextDecoration.LineThrough,
-                                                        color = MaterialTheme.colorScheme.error
-                                                    )
-                                                } else {
-                                                    Text(
-                                                        text = listElement.name,
-                                                        modifier = Modifier.padding(start = 10.dp),
-                                                        color = MaterialTheme.colorScheme.error
+                                            TodoItem(listElement, updateTask = { isCompleted ->
+                                                CoroutineScope(Dispatchers.Default).launch {
+                                                    viewModel.updateTask(
+                                                        listElement.id, isCompleted = isCompleted
                                                     )
                                                 }
-
-                                            }
+                                            }, deleteTask = {
+                                                CoroutineScope(Dispatchers.Default).launch {
+                                                    viewModel.deleteTask(
+                                                        listElement.id
+                                                    )
+                                                }
+                                            })
                                         }
                                     }
                                     LazyColumn {
                                         items(viewModel.listToday.value) { listElement ->
-                                            Row(
-                                                modifier = Modifier
-                                                    .padding(12.dp)
-                                                    .fillMaxWidth()
-                                                    .combinedClickable(onClick = {
-                                                        CoroutineScope(Dispatchers.Default).launch {
-
-                                                            viewModel.updateTask(
-                                                                listElement.id, !listElement.isCompleted
-                                                            )
-                                                        }
-
-                                                    }, onLongClick = {
-                                                        viewModel.deleteTask(listElement.id)
-                                                    })
-                                            ) {
-                                                if (listElement.isCompleted) {
-                                                    Text(
-                                                        text = listElement.name,
-                                                        modifier = Modifier.padding(start = 10.dp),
-                                                        textDecoration = TextDecoration.LineThrough,
-                                                        color = Color.Gray
-                                                    )
-                                                } else {
-                                                    Text(
-                                                        text = listElement.name,
-                                                        modifier = Modifier.padding(start = 10.dp),
-                                                        color = MaterialTheme.colorScheme.onBackground
+                                            TodoItem(listElement, updateTask = { isCompleted ->
+                                                CoroutineScope(Dispatchers.Default).launch {
+                                                    viewModel.updateTask(
+                                                        listElement.id, isCompleted = isCompleted
                                                     )
                                                 }
-
-                                            }
+                                            }, deleteTask = {
+                                                CoroutineScope(Dispatchers.Default).launch {
+                                                    viewModel.deleteTask(
+                                                        listElement.id
+                                                    )
+                                                }
+                                            })
                                         }
                                     }
                                 }
@@ -313,38 +274,19 @@ fun MyMainScreen(viewModel: MainScreenViewModel = hiltViewModel(key = "12")) {
                             } else {
                                 LazyColumn {
                                     items(viewModel.listTomorrow.value) { listElement ->
-                                        Row(
-                                            modifier = Modifier
-                                                .padding(12.dp)
-                                                .fillMaxWidth()
-                                                .combinedClickable(onClick = {
-                                                    CoroutineScope(Dispatchers.Default).launch {
-
-                                                        viewModel.updateTask(
-                                                            listElement.id, !listElement.isCompleted
-                                                        )
-                                                    }
-
-                                                }, onLongClick = {
-                                                    viewModel.deleteTask(listElement.id)
-                                                })
-                                        ) {
-                                            if (listElement.isCompleted) {
-                                                Text(
-                                                    text = listElement.name,
-                                                    modifier = Modifier.padding(start = 10.dp),
-                                                    textDecoration = TextDecoration.LineThrough,
-                                                    color = Color.Gray
-                                                )
-                                            } else {
-                                                Text(
-                                                    text = listElement.name,
-                                                    modifier = Modifier.padding(start = 10.dp),
-                                                    color = MaterialTheme.colorScheme.onBackground
+                                        TodoItem(listElement, updateTask = { isCompleted ->
+                                            CoroutineScope(Dispatchers.Default).launch {
+                                                viewModel.updateTask(
+                                                    listElement.id, isCompleted = isCompleted
                                                 )
                                             }
-
-                                        }
+                                        }, deleteTask = {
+                                            CoroutineScope(Dispatchers.Default).launch {
+                                                viewModel.deleteTask(
+                                                    listElement.id
+                                                )
+                                            }
+                                        })
                                     }
                                 }
                             }

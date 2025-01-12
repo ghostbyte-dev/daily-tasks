@@ -34,8 +34,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.daniebeler.dailytasks.R
 import com.daniebeler.dailytasks.db.Task
+import com.daniebeler.dailytasks.db.isOverdue
+import com.daniebeler.dailytasks.db.isUntilToday
+import com.daniebeler.dailytasks.utils.CUSTOM_GREEN
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,6 +60,50 @@ fun TodoItem(task: Task, updateTask: (isCompleted: Boolean) -> Unit, deleteTask:
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        Column(
+            Modifier
+                .clickable {
+                    showBottomSheet = true
+                }
+                .weight(1f)
+                .padding(start = 12.dp, top = 12.dp, end = 0.dp, bottom = 12.dp)
+                .fillMaxHeight()) {
+            Text(text = task.name)
+
+            if (task.isOverdue().first) {
+                var text = "Due " + task.isOverdue().second + " days ago"
+                if (task.isOverdue().second == 1L) {
+                    text = "Due yesterday"
+                }
+                Text(
+                    text,
+                    color = MaterialTheme.colorScheme.error,
+                    textAlign = TextAlign.Start,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 12.sp,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            } else if (task.isUntilToday()) {
+                Text(
+                    "Due today",
+                    color = CUSTOM_GREEN,
+                    textAlign = TextAlign.Start,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 12.sp,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            } else {
+                Text(
+                    "Planned for tomorrow",
+                    color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.Start,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 12.sp,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
+
         if (task.isCompleted) {
             Box(
                 Modifier
@@ -60,7 +112,7 @@ fun TodoItem(task: Task, updateTask: (isCompleted: Boolean) -> Unit, deleteTask:
                     }
                     .padding(12.dp)
                     .clip(RoundedCornerShape(4.dp))
-                    .background(MaterialTheme.colorScheme.primary)
+                    .background(CUSTOM_GREEN)
                     .padding(4.dp)) {
                 Icon(
                     imageVector = Icons.Filled.Check,
@@ -77,30 +129,15 @@ fun TodoItem(task: Task, updateTask: (isCompleted: Boolean) -> Unit, deleteTask:
                     }
                     .padding(12.dp)
                     .clip(RoundedCornerShape(4.dp))
-                    .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp))
+                    .border(1.dp, MaterialTheme.colorScheme.onSurface, RoundedCornerShape(4.dp))
                     .padding(4.dp)) {
                 Icon(
                     imageVector = Icons.Filled.Check,
                     contentDescription = "Home icon",
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(24.dp)
                 )
             }
-        }
-
-        Box(
-            Modifier
-                .clickable {
-                    showBottomSheet = true
-                }
-                .weight(1f)
-                .padding(12.dp)
-                .fillMaxHeight()) {
-            Text(text = task.name, modifier = Modifier
-                .padding(start = 10.dp)
-                .clickable {
-                    showBottomSheet = true
-                })
         }
     }
 
@@ -116,21 +153,38 @@ fun TodoItem(task: Task, updateTask: (isCompleted: Boolean) -> Unit, deleteTask:
                 Spacer(Modifier.height(24.dp))
 
                 Row(Modifier.fillMaxWidth()) {
-                    Button(
-                        onClick = {
-                            showBottomSheet = false
-                            deleteTask()
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.error,
-                            contentColor = MaterialTheme.colorScheme.onError
-                        ),
-                        modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(16.dp),
-                        contentPadding = PaddingValues(12.dp),
-                    ) {
-                        Text("Delete task")
+                    if (task.isCompleted) {
+                        Button(
+                            onClick = {
+                                updateTask(!task.isCompleted)
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
+                            ),
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(16.dp),
+                            contentPadding = PaddingValues(12.dp),
+                        ) {
+                            Text("Mark as done")
+                        }
+                    } else {
+                        Button(
+                            onClick = {
+                                updateTask(!task.isCompleted)
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
+                            ),
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(16.dp),
+                            contentPadding = PaddingValues(12.dp),
+                        ) {
+                            Text("Mark as undone")
+                        }
                     }
+
 
                     Spacer(Modifier.width(12.dp))
 

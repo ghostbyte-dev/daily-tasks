@@ -6,4 +6,5 @@
     <string name="the_ivy_lee_method">Die Ivy Lee Methode</string>
     <string name="new_task">Neue Aufgabe</string>
     <string name="save">Speichern</string>
+    <string name="delete_task">Aufgabe löschen</string>
 </resources>

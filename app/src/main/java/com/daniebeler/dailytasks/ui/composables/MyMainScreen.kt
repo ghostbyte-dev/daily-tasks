@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -178,22 +179,28 @@ fun MyMainScreen(viewModel: MainScreenViewModel = hiltViewModel(key = "12")) {
                 PrimaryTabRow(
                     selectedTabIndex = pagerState.currentPage
                 ) {
-                    Tab(text = { Text(stringResource(R.string.today)) },
-                        selected = pagerState.currentPage == 0,
-                        onClick = {
-                            scope.launch {
-                                pagerState.animateScrollToPage(0)
-                            }
+                    Tab(text = {
+                        Text(
+                            stringResource(R.string.today),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }, selected = pagerState.currentPage == 0, onClick = {
+                        scope.launch {
+                            pagerState.animateScrollToPage(0)
+                        }
 
-                        })
+                    })
 
-                    Tab(text = { Text(stringResource(R.string.tomorrow)) },
-                        selected = pagerState.currentPage == 0,
-                        onClick = {
-                            scope.launch {
-                                pagerState.animateScrollToPage(1)
-                            }
-                        })
+                    Tab(text = {
+                        Text(
+                            stringResource(R.string.tomorrow),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }, selected = pagerState.currentPage == 0, onClick = {
+                        scope.launch {
+                            pagerState.animateScrollToPage(1)
+                        }
+                    })
                 }
 
                 HorizontalPager(
@@ -299,8 +306,5 @@ fun MyMainScreen(viewModel: MainScreenViewModel = hiltViewModel(key = "12")) {
                 }
             }
         }
-
     })
-
-
 }

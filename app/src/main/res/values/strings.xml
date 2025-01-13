@@ -6,4 +6,12 @@
     <string name="new_task">New task</string>
     <string name="save">Save</string>
     <string name="delete_task">Delete task</string>
+    <string name="new_task_for_today">New task for today:</string>
+    <string name="new_task_for_tomorrow">New task for tomorrow:</string>
+    <string name="due_yesterday">Due yesterday</string>
+    <string name="due_days_ago">Due %1$s days ago</string>
+    <string name="due_today">Due today</string>
+    <string name="planned_for_tomorrow">Planned for tomorrow</string>
+    <string name="mark_as_done">Mark as done</string>
+    <string name="mark_as_undone">Mark as undone</string>
 </resources>

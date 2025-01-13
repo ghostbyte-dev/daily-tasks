@@ -47,20 +47,22 @@ fun MyMainScreen(viewModel: MainScreenViewModel = hiltViewModel(key = "12")) {
 
     val showBottomSheet = remember { mutableStateOf(false) }
 
-    NewTaskBottomSheet(showState = showBottomSheet, storeTask = { taskText ->
+    NewTaskBottomSheet(showState = showBottomSheet,
+        isForToday = pagerState.currentPage == 0,
+        storeTask = { taskText ->
 
-        var date = LocalDate.now().toEpochDay()
-        if (pagerState.currentPage == 1) {
-            date++
-        }
-        val newTask = Task(0, date, date, taskText, false)
+            var date = LocalDate.now().toEpochDay()
+            if (pagerState.currentPage == 1) {
+                date++
+            }
+            val newTask = Task(0, date, date, taskText, false)
 
-        CoroutineScope(Dispatchers.Default).launch {
-            viewModel.storeNewTask(newTask)
-        }
+            CoroutineScope(Dispatchers.Default).launch {
+                viewModel.storeNewTask(newTask)
+            }
 
-        showBottomSheet.value = false
-    })
+            showBottomSheet.value = false
+        })
 
     Scaffold(content = { paddingValues ->
         Box(Modifier.padding(paddingValues)) {
@@ -111,7 +113,7 @@ fun MyMainScreen(viewModel: MainScreenViewModel = hiltViewModel(key = "12")) {
                             if (viewModel.listToday.value.isEmpty() && viewModel.listOld.value.isEmpty()) {
                                 Icon(
                                     Icons.Default.Done,
-                                    contentDescription = "Shopping Cart",
+                                    contentDescription = "Done icon",
                                     modifier = Modifier
                                         .align(Alignment.Center)
                                         .size(64.dp),
@@ -153,7 +155,7 @@ fun MyMainScreen(viewModel: MainScreenViewModel = hiltViewModel(key = "12")) {
                             if (viewModel.listTomorrow.value.isEmpty()) {
                                 Icon(
                                     Icons.Default.Add,
-                                    contentDescription = "Shopping Cart",
+                                    contentDescription = "Add icon",
                                     modifier = Modifier
                                         .align(Alignment.Center)
                                         .size(64.dp),

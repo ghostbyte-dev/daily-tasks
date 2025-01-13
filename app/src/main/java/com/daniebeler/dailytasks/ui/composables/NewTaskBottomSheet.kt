@@ -38,18 +38,21 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
 import com.daniebeler.dailytasks.R
+import com.daniebeler.dailytasks.utils.CUSTOM_GREEN
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewTaskBottomSheet(
     showState: MutableState<Boolean>,
-    shape: Shape = BottomSheetDefaults.ExpandedShape,
+    isForToday: Boolean,
     storeTask: (text: String) -> Unit,
 ) {
 
@@ -78,11 +81,26 @@ fun NewTaskBottomSheet(
                 enter = slideInVertically(initialOffsetY = { it }),
                 exit = slideOutVertically(targetOffsetY = { it })
             ) {
-                Surface(shape = shape) {
-                    Column {
+                Surface(shape = BottomSheetDefaults.ExpandedShape) {
+                    Column(Modifier.padding(16.dp)) {
+                        if (isForToday) {
+                            Text(
+                                modifier = Modifier.padding(start = 14.dp),
+                                text = stringResource(R.string.new_task_for_today),
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        } else {
+                            Text(
+                                modifier = Modifier.padding(start = 14.dp),
+                                text = stringResource(R.string.new_task_for_tomorrow),
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+
                         Row(
-                            horizontalArrangement = Arrangement.SpaceAround,
-                            modifier = Modifier.padding(16.dp)
+                            horizontalArrangement = Arrangement.SpaceAround
                         ) {
                             TextField(
                                 value = modalTextValue,

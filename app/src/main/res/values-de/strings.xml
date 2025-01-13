@@ -7,4 +7,12 @@
     <string name="new_task">Neue Aufgabe</string>
     <string name="save">Speichern</string>
     <string name="delete_task">Aufgabe löschen</string>
+    <string name="new_task_for_today">Neue Aufgabe für heute:</string>
+    <string name="new_task_for_tomorrow">Neue Aufgabe für morgen:</string>
+    <string name="due_yesterday">Gesten fällig</string>
+    <string name="due_days_ago">Fällig vor %1$s Tagen</string>
+    <string name="due_today">Heute fällig</string>
+    <string name="planned_for_tomorrow">Für morgen geplant</string>
+    <string name="mark_as_done">Erledigt</string>
+    <string name="mark_as_undone">Nicht Erledigt</string>
 </resources>

@@ -57,7 +57,12 @@ import com.daniebeler.dailytasks.utils.CUSTOM_RED
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TodoItem(task: Task, updateTask: (isCompleted: Boolean) -> Unit, updateText: (text: String) -> Unit, deleteTask: () -> Unit) {
+fun TodoItem(
+    task: Task,
+    updateTask: (isCompleted: Boolean) -> Unit,
+    updateText: (text: String) -> Unit,
+    deleteTask: () -> Unit
+) {
 
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -84,9 +89,9 @@ fun TodoItem(task: Task, updateTask: (isCompleted: Boolean) -> Unit, updateText:
             Text(text = task.name)
 
             if (task.isOverdue().first) {
-                var text = "Due " + task.isOverdue().second + " days ago"
+                var text = stringResource(R.string.due_days_ago, task.isOverdue().second)
                 if (task.isOverdue().second == 1L) {
-                    text = "Due yesterday"
+                    text = stringResource(R.string.due_yesterday)
                 }
                 Text(
                     text,
@@ -98,7 +103,7 @@ fun TodoItem(task: Task, updateTask: (isCompleted: Boolean) -> Unit, updateText:
                 )
             } else if (task.isUntilToday()) {
                 Text(
-                    "Due today",
+                    stringResource(R.string.due_today),
                     color = CUSTOM_GREEN,
                     textAlign = TextAlign.Start,
                     fontWeight = FontWeight.Bold,
@@ -107,7 +112,7 @@ fun TodoItem(task: Task, updateTask: (isCompleted: Boolean) -> Unit, updateText:
                 )
             } else {
                 Text(
-                    "Planned for tomorrow",
+                    text = stringResource(R.string.planned_for_tomorrow),
                     color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Start,
                     fontWeight = FontWeight.Bold,
@@ -198,7 +203,7 @@ fun TodoItem(task: Task, updateTask: (isCompleted: Boolean) -> Unit, updateText:
                             shape = RoundedCornerShape(16.dp),
                             contentPadding = PaddingValues(12.dp),
                         ) {
-                            Text("Mark as done")
+                            Text(stringResource(R.string.mark_as_done))
                         }
                     } else {
                         Button(
@@ -213,7 +218,7 @@ fun TodoItem(task: Task, updateTask: (isCompleted: Boolean) -> Unit, updateText:
                             shape = RoundedCornerShape(16.dp),
                             contentPadding = PaddingValues(12.dp),
                         ) {
-                            Text("Mark as undone")
+                            Text(stringResource(R.string.mark_as_undone))
                         }
                     }
 
@@ -226,18 +231,15 @@ fun TodoItem(task: Task, updateTask: (isCompleted: Boolean) -> Unit, updateText:
                             deleteTask()
                         },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = CUSTOM_RED,
-                            contentColor = Color.White
+                            containerColor = CUSTOM_RED, contentColor = Color.White
                         ),
                         modifier = Modifier.weight(1f),
                         shape = RoundedCornerShape(16.dp),
                         contentPadding = PaddingValues(12.dp),
                     ) {
-                        Text("Delete task")
+                        Text(stringResource(R.string.delete_task))
                     }
                 }
-
-
             }
         }
     }

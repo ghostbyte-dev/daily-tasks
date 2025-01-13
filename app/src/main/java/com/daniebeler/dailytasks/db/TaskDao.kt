@@ -24,6 +24,9 @@ interface TaskDao {
     @Query("UPDATE tasks SET lastInteracted = :lastInteracted, isCompleted = :isCompleted WHERE id = :id")
     suspend fun updateTask(id: Long, isCompleted: Boolean, lastInteracted: Long)
 
+    @Query("UPDATE tasks SET lastInteracted = :lastInteracted, name = :text WHERE id = :id")
+    suspend fun updateTaskText(id: Long, text: String, lastInteracted: Long)
+
     @Delete()
     suspend fun deleteTask(task: Task)
 }

@@ -126,6 +126,12 @@ fun MyMainScreen(viewModel: MainScreenViewModel = hiltViewModel(key = "12")) {
                                                     listElement.id, isCompleted = isCompleted
                                                 )
                                             }
+                                        }, updateText = { text ->
+                                            CoroutineScope(Dispatchers.Default).launch {
+                                                viewModel.updateTaskText(
+                                                    listElement.id, newText = text
+                                                )
+                                            }
                                         }, deleteTask = {
                                             CoroutineScope(Dispatchers.Default).launch {
                                                 viewModel.deleteTask(
@@ -160,6 +166,12 @@ fun MyMainScreen(viewModel: MainScreenViewModel = hiltViewModel(key = "12")) {
                                             CoroutineScope(Dispatchers.Default).launch {
                                                 viewModel.updateTask(
                                                     listElement.id, isCompleted = isCompleted
+                                                )
+                                            }
+                                        }, updateText = { text ->
+                                            CoroutineScope(Dispatchers.Default).launch {
+                                                viewModel.updateTaskText(
+                                                    listElement.id, newText = text
                                                 )
                                             }
                                         }, deleteTask = {

@@ -39,6 +39,11 @@ class MainScreenViewModel @Inject constructor(
         loadData()
     }
 
+    suspend fun updateTaskText(id: Long, newText: String) {
+        taskRepository.updateTaskText(id, newText)
+        loadData()
+    }
+
     fun deleteTask(id: Long) {
         CoroutineScope(Dispatchers.Default).launch {
             taskRepository.deleteTask(id)

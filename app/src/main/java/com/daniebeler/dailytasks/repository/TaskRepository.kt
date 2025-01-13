@@ -28,6 +28,10 @@ class TaskRepository @Inject constructor(
         taskDao.updateTask(id, isCompleted, LocalDate.now().toEpochDay())
     }
 
+    suspend fun updateTaskText(id: Long, text: String) {
+        taskDao.updateTaskText(id, text, LocalDate.now().toEpochDay())
+    }
+
     suspend fun deleteTask(id: Long) {
         val taskToDelete = taskDao.getTaskById(id)
         taskToDelete?.let {

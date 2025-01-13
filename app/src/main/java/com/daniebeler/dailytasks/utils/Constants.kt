@@ -9,3 +9,4 @@ const val DB_VERSION = 2
 const val TABLE_TASKS = "tasks"
 
 val CUSTOM_GREEN = Color(0xFF1ED760)
+val CUSTOM_RED = Color(0xFFF93827)

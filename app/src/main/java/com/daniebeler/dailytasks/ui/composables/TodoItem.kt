@@ -44,6 +44,7 @@ import com.daniebeler.dailytasks.db.Task
 import com.daniebeler.dailytasks.db.isOverdue
 import com.daniebeler.dailytasks.db.isUntilToday
 import com.daniebeler.dailytasks.utils.CUSTOM_GREEN
+import com.daniebeler.dailytasks.utils.CUSTOM_RED
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,7 +78,7 @@ fun TodoItem(task: Task, updateTask: (isCompleted: Boolean) -> Unit, deleteTask:
                 }
                 Text(
                     text,
-                    color = MaterialTheme.colorScheme.error,
+                    color = CUSTOM_RED,
                     textAlign = TextAlign.Start,
                     fontWeight = FontWeight.Bold,
                     fontSize = 12.sp,
@@ -116,7 +117,7 @@ fun TodoItem(task: Task, updateTask: (isCompleted: Boolean) -> Unit, deleteTask:
                     .padding(4.dp)) {
                 Icon(
                     imageVector = Icons.Filled.Check,
-                    contentDescription = "Home icon",
+                    contentDescription = "Check icon",
                     tint = MaterialTheme.colorScheme.surfaceContainer,
                     modifier = Modifier.size(24.dp)
                 )
@@ -133,7 +134,7 @@ fun TodoItem(task: Task, updateTask: (isCompleted: Boolean) -> Unit, deleteTask:
                     .padding(4.dp)) {
                 Icon(
                     imageVector = Icons.Filled.Check,
-                    contentDescription = "Home icon",
+                    contentDescription = "Check icon",
                     tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(24.dp)
                 )
@@ -194,8 +195,8 @@ fun TodoItem(task: Task, updateTask: (isCompleted: Boolean) -> Unit, deleteTask:
                             deleteTask()
                         },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.error,
-                            contentColor = MaterialTheme.colorScheme.onError
+                            containerColor = CUSTOM_RED,
+                            contentColor = Color.White
                         ),
                         modifier = Modifier.weight(1f),
                         shape = RoundedCornerShape(16.dp),

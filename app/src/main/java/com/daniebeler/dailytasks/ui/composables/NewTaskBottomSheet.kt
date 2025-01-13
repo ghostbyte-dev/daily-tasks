@@ -7,13 +7,17 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -100,19 +104,30 @@ fun NewTaskBottomSheet(
                                 colors = TextFieldDefaults.colors(
                                     focusedContainerColor = Color.Transparent,
                                     unfocusedContainerColor = Color.Transparent,
-                                    focusedIndicatorColor = Color.Transparent
+                                    focusedIndicatorColor = Color.Transparent,
+                                    cursorColor = MaterialTheme.colorScheme.onSurface,
+                                    focusedTextColor = MaterialTheme.colorScheme.onSurface
                                 ),
-                                singleLine = true
                             )
 
-                            Button(onClick = {
-                                if (modalTextValue.isNotBlank()) {
-                                    storeTask(modalTextValue)
-                                    keyboardController?.hide()
-                                    modalTextValue = ""
-                                    focusManager.clearFocus()
-                                }
-                            }) {
+                            Button(
+                                onClick = {
+                                    if (modalTextValue.isNotBlank()) {
+                                        storeTask(modalTextValue)
+                                        keyboardController?.hide()
+                                        modalTextValue = ""
+                                        focusManager.clearFocus()
+                                    }
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.onSurface,
+                                    contentColor = MaterialTheme.colorScheme.inverseOnSurface
+                                ),
+                                shape = RoundedCornerShape(12.dp),
+                                contentPadding = PaddingValues(
+                                    horizontal = 24.dp, vertical = 12.dp
+                                ),
+                            ) {
                                 Text(text = stringResource(R.string.save))
                             }
                         }

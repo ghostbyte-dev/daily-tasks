@@ -3,6 +3,7 @@ package com.daniebeler.dailytasks.ui.composables
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -105,7 +106,7 @@ fun MyMainScreen(viewModel: MainScreenViewModel = hiltViewModel(key = "12")) {
                         0 -> Box(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(16.dp)
+                                .padding(horizontal = 16.dp)
                         ) {
                             if (viewModel.listToday.value.isEmpty() && viewModel.listOld.value.isEmpty()) {
                                 Icon(
@@ -117,49 +118,31 @@ fun MyMainScreen(viewModel: MainScreenViewModel = hiltViewModel(key = "12")) {
                                     tint = MaterialTheme.colorScheme.onBackground
                                 )
                             } else {
-                                Column {
-                                    LazyColumn {
-                                        items(viewModel.listOld.value) { listElement ->
-                                            TodoItem(listElement, updateTask = { isCompleted ->
-                                                CoroutineScope(Dispatchers.Default).launch {
-                                                    viewModel.updateTask(
-                                                        listElement.id, isCompleted = isCompleted
-                                                    )
-                                                }
-                                            }, deleteTask = {
-                                                CoroutineScope(Dispatchers.Default).launch {
-                                                    viewModel.deleteTask(
-                                                        listElement.id
-                                                    )
-                                                }
-                                            })
-                                        }
-                                    }
-                                    LazyColumn {
-                                        items(viewModel.listToday.value) { listElement ->
-                                            TodoItem(listElement, updateTask = { isCompleted ->
-                                                CoroutineScope(Dispatchers.Default).launch {
-                                                    viewModel.updateTask(
-                                                        listElement.id, isCompleted = isCompleted
-                                                    )
-                                                }
-                                            }, deleteTask = {
-                                                CoroutineScope(Dispatchers.Default).launch {
-                                                    viewModel.deleteTask(
-                                                        listElement.id
-                                                    )
-                                                }
-                                            })
-                                        }
+                                LazyColumn(contentPadding = PaddingValues(top = 12.dp)) {
+                                    items(viewModel.listOld.value + viewModel.listToday.value) { listElement ->
+                                        TodoItem(listElement, updateTask = { isCompleted ->
+                                            CoroutineScope(Dispatchers.Default).launch {
+                                                viewModel.updateTask(
+                                                    listElement.id, isCompleted = isCompleted
+                                                )
+                                            }
+                                        }, deleteTask = {
+                                            CoroutineScope(Dispatchers.Default).launch {
+                                                viewModel.deleteTask(
+                                                    listElement.id
+                                                )
+                                            }
+                                        })
                                     }
                                 }
+
                             }
                         }
 
                         1 -> Box(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(16.dp)
+                                .padding(horizontal = 16.dp)
                         ) {
                             if (viewModel.listTomorrow.value.isEmpty()) {
                                 Icon(
@@ -171,7 +154,7 @@ fun MyMainScreen(viewModel: MainScreenViewModel = hiltViewModel(key = "12")) {
                                     tint = MaterialTheme.colorScheme.onBackground
                                 )
                             } else {
-                                LazyColumn {
+                                LazyColumn(contentPadding = PaddingValues(top = 12.dp)) {
                                     items(viewModel.listTomorrow.value) { listElement ->
                                         TodoItem(listElement, updateTask = { isCompleted ->
                                             CoroutineScope(Dispatchers.Default).launch {

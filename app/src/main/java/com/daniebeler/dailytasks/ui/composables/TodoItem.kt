@@ -3,6 +3,7 @@ package com.daniebeler.dailytasks.ui.composables
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -13,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -37,8 +37,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -163,7 +161,7 @@ fun TodoItem(
         ModalBottomSheet(
             onDismissRequest = {
                 showBottomSheet = false;
-            }, sheetState = sheetState
+            }, sheetState = sheetState, containerColor = MaterialTheme.colorScheme.surfaceContainer
         ) {
             Column(Modifier.padding(24.dp)) {
                 TextField(
@@ -189,41 +187,7 @@ fun TodoItem(
 
                 Spacer(Modifier.height(24.dp))
 
-                Row(Modifier.fillMaxWidth()) {
-                    if (task.isCompleted) {
-                        Button(
-                            onClick = {
-                                updateTask(!task.isCompleted)
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                contentColor = MaterialTheme.colorScheme.onPrimary
-                            ),
-                            modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(16.dp),
-                            contentPadding = PaddingValues(12.dp),
-                        ) {
-                            Text(stringResource(R.string.mark_as_done))
-                        }
-                    } else {
-                        Button(
-                            onClick = {
-                                updateTask(!task.isCompleted)
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                contentColor = MaterialTheme.colorScheme.onPrimary
-                            ),
-                            modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(16.dp),
-                            contentPadding = PaddingValues(12.dp),
-                        ) {
-                            Text(stringResource(R.string.mark_as_undone))
-                        }
-                    }
-
-
-                    Spacer(Modifier.width(12.dp))
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
 
                     Button(
                         onClick = {
@@ -233,9 +197,8 @@ fun TodoItem(
                         colors = ButtonDefaults.buttonColors(
                             containerColor = CUSTOM_RED, contentColor = Color.White
                         ),
-                        modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(16.dp),
-                        contentPadding = PaddingValues(12.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        contentPadding = PaddingValues(vertical = 12.dp, horizontal = 24.dp),
                     ) {
                         Text(stringResource(R.string.delete_task))
                     }

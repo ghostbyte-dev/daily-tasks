@@ -81,7 +81,7 @@ fun NewTaskBottomSheet(
                 enter = slideInVertically(initialOffsetY = { it }),
                 exit = slideOutVertically(targetOffsetY = { it })
             ) {
-                Surface(shape = BottomSheetDefaults.ExpandedShape) {
+                Surface(shape = BottomSheetDefaults.ExpandedShape, color = MaterialTheme.colorScheme.surfaceContainer) {
                     Column(Modifier.padding(16.dp)) {
                         if (isForToday) {
                             Text(

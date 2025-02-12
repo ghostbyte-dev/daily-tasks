@@ -26,7 +26,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,22 +35,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
 import com.daniebeler.dailytasks.R
-import com.daniebeler.dailytasks.utils.CUSTOM_GREEN
 import com.daniebeler.dailytasks.utils.CUSTOM_RED
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -63,9 +58,6 @@ fun EditTaskBottomSheet(
     deleteTask: () -> Unit
 ) {
 
-
-
-
     var modalTextValue by remember {
         mutableStateOf(text)
     }
@@ -76,8 +68,10 @@ fun EditTaskBottomSheet(
         }
 
         Dialog(
-            onDismissRequest = { showState.value = false },
-            properties = DialogProperties(usePlatformDefaultWidth = false)
+            onDismissRequest = {
+                updateTask(modalTextValue)
+                showState.value = false
+            }, properties = DialogProperties(usePlatformDefaultWidth = false)
         ) {
             val dialogWindowProvider = LocalView.current.parent as DialogWindowProvider
             dialogWindowProvider.window.setGravity(Gravity.BOTTOM)

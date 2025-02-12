@@ -14,8 +14,8 @@ android {
         applicationId = "com.daniebeler.dailytasks"
         minSdk = 26
         targetSdk = 35
-        versionCode = 5
-        versionName = "1.4"
+        versionCode = 6
+        versionName = "2.0"
 
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas")
@@ -71,6 +71,4 @@ dependencies {
     implementation (libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
-
-    implementation(libs.accompanist.systemuicontroller)
 }

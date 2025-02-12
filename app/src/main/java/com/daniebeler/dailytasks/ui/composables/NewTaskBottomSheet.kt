@@ -40,6 +40,8 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -81,7 +83,10 @@ fun NewTaskBottomSheet(
                 enter = slideInVertically(initialOffsetY = { it }),
                 exit = slideOutVertically(targetOffsetY = { it })
             ) {
-                Surface(shape = BottomSheetDefaults.ExpandedShape, color = MaterialTheme.colorScheme.surfaceContainer) {
+                Surface(
+                    shape = BottomSheetDefaults.ExpandedShape,
+                    color = MaterialTheme.colorScheme.surfaceContainer
+                ) {
                     Column(Modifier.padding(16.dp)) {
                         if (isForToday) {
                             Text(
@@ -110,7 +115,11 @@ fun NewTaskBottomSheet(
                                 modifier = Modifier
                                     .weight(1f)
                                     .focusRequester(focusRequester),
-                                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                                keyboardOptions = KeyboardOptions(
+                                    imeAction = ImeAction.Done,
+                                    capitalization = KeyboardCapitalization.Sentences,
+                                    keyboardType = KeyboardType.Text
+                                ),
                                 keyboardActions = KeyboardActions(onDone = {
                                     if (modalTextValue.isNotBlank()) {
                                         storeTask(modalTextValue)

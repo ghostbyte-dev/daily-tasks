@@ -37,6 +37,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -65,8 +67,11 @@ fun TodoItem(
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val focusManager = LocalFocusManager.current
+
+
+    var modalTextValue by remember {
+        mutableStateOf(task.name)
+    }
 
     Row(
         modifier = Modifier
@@ -163,17 +168,23 @@ fun TodoItem(
                 showBottomSheet = false;
             }, sheetState = sheetState, containerColor = MaterialTheme.colorScheme.surfaceContainer
         ) {
+
+            val keyboardController = LocalSoftwareKeyboardController.current
+            val focusRequester = remember { FocusRequester() }
+            val focusManager = LocalFocusManager.current
+
             Column(Modifier.padding(24.dp)) {
                 TextField(
-                    value = task.name,
+                    value = modalTextValue,
                     onValueChange = { newText ->
-                        updateText(newText)
+                        modalTextValue = newText
                     },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(onDone = {
-                        focusManager.clearFocus()
+                        updateText(modalTextValue)
                         keyboardController?.hide()
+                        focusManager.clearFocus()
                     }),
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = Color.Transparent,

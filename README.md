@@ -1,5 +1,7 @@
 # Daily Tasks - Ivy Lee Method
 
+![Screenshot of Daily Tasks app](https://github.com/ghostbyte-dev/daily-tasks/blob/52f14fcb07a861a192860754f56f6641ca328be3/assets/dailytasks.png)
+
 A minimalist Android app built with Kotlin and Jetpack Compose that helps you organize your daily tasks using the Ivy Lee Method. Users can list tasks for the day and focus on completing them one by one, promoting productivity and better task management.
 
 

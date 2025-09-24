@@ -8,12 +8,12 @@ plugins {
 
 android {
     namespace = "com.daniebeler.dailytasks"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.daniebeler.dailytasks"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 7
         versionName = "2.0.1"
 

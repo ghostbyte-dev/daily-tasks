@@ -29,7 +29,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.daniebeler.dailytasks.R
 import com.daniebeler.dailytasks.db.Task
 import kotlinx.coroutines.CoroutineScope
@@ -39,7 +40,15 @@ import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyMainScreen(viewModel: MainScreenViewModel = hiltViewModel(key = "12")) {
+fun MyMainScreen(
+    viewModel: MainScreenViewModel = hiltViewModel(
+        checkNotNull(
+            LocalViewModelStoreOwner.current
+        ) {
+            "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
+        }, "12"
+    )
+) {
 
     val scope = rememberCoroutineScope()
 
@@ -47,7 +56,8 @@ fun MyMainScreen(viewModel: MainScreenViewModel = hiltViewModel(key = "12")) {
 
     val showBottomSheet = remember { mutableStateOf(false) }
 
-    NewTaskBottomSheet(showState = showBottomSheet,
+    NewTaskBottomSheet(
+        showState = showBottomSheet,
         isForToday = pagerState.currentPage == 0,
         storeTask = { taskText ->
 

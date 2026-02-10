@@ -28,6 +28,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
@@ -82,30 +83,37 @@ fun MyMainScreen(
                 IvyLeeRow()
 
                 PrimaryTabRow(
-                    selectedTabIndex = pagerState.currentPage
+                    selectedTabIndex = pagerState.currentPage,
+                    divider = {},
                 ) {
-                    Tab(text = {
-                        Text(
-                            stringResource(R.string.today),
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }, selected = pagerState.currentPage == 0, onClick = {
-                        scope.launch {
-                            pagerState.animateScrollToPage(0)
-                        }
+                    val tabs = listOf(
+                        stringResource(R.string.today) to 0,
+                        stringResource(R.string.tomorrow) to 1
+                    )
 
-                    })
-
-                    Tab(text = {
-                        Text(
-                            stringResource(R.string.tomorrow),
-                            color = MaterialTheme.colorScheme.onSurface
+                    tabs.forEach { (title, index) ->
+                        val isSelected = pagerState.currentPage == index
+                        Tab(
+                            selected = isSelected,
+                            onClick = {
+                                scope.launch { pagerState.animateScrollToPage(index) }
+                            },
+                            text = {
+                                Text(
+                                    text = title,
+                                    // 3. Bold the active tab
+                                    style = MaterialTheme.typography.titleMedium.copy(
+                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                                    ),
+                                    color = if (isSelected)
+                                        MaterialTheme.colorScheme.primary
+                                    else
+                                        MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
                         )
-                    }, selected = pagerState.currentPage == 0, onClick = {
-                        scope.launch {
-                            pagerState.animateScrollToPage(1)
-                        }
-                    })
+                    }
+
                 }
 
                 HorizontalPager(

@@ -50,6 +50,17 @@ class MainScreenViewModel @Inject constructor(
         }
     }
 
+    fun moveTask(fromIndex: Int, toIndex: Int) {
+        val list = listTomorrow.value.toMutableList()
+        if (fromIndex !in list.indices || toIndex !in list.indices) return
+
+        val item = list.removeAt(fromIndex)
+        list.add(toIndex, item)
+        listTomorrow.value = list
+
+        // Suggestion: Persist the new order to DB here if you have a 'priority' column
+    }
+
     private suspend fun loadData() {
         listToday.value = taskRepository.getTasksOfToday()
         listTomorrow.value = taskRepository.getTasksOfTomorrow()

@@ -1,42 +1,57 @@
 package com.daniebeler.dailytasks.ui.composables
 
+import IvyLeeTaskItem
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.rounded.DragHandle
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.daniebeler.dailytasks.R
 import com.daniebeler.dailytasks.db.Task
+import com.daniebeler.dailytasks.ui.theme.MyVariableFont
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import sh.calvin.reorderable.ReorderableItem
+import sh.calvin.reorderable.rememberReorderableLazyListState
 import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -93,6 +108,19 @@ fun MyMainScreen(
 
                     tabs.forEach { (title, index) ->
                         val isSelected = pagerState.currentPage == index
+                        val animatedWeight by animateIntAsState(
+                            targetValue = if (isSelected) 700 else 400,
+                            animationSpec = spring(stiffness = Spring.StiffnessLow),
+                            label = "FontWeightAnimation"
+                        )
+
+                        val textColor by animateColorAsState(
+                            targetValue = if (isSelected) MaterialTheme.colorScheme.primary
+                            else MaterialTheme.colorScheme.onSurfaceVariant,
+                            label = "TabColor"
+                        )
+
+
                         Tab(
                             selected = isSelected,
                             onClick = {
@@ -101,14 +129,11 @@ fun MyMainScreen(
                             text = {
                                 Text(
                                     text = title,
-                                    // 3. Bold the active tab
-                                    style = MaterialTheme.typography.titleMedium.copy(
-                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                                    style = TextStyle(
+                                        fontFamily = MyVariableFont,
+                                        fontWeight = FontWeight(animatedWeight)
                                     ),
-                                    color = if (isSelected)
-                                        MaterialTheme.colorScheme.primary
-                                    else
-                                        MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = textColor
                                 )
                             }
                         )
@@ -165,43 +190,59 @@ fun MyMainScreen(
                             }
                         }
 
-                        1 -> Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(horizontal = 16.dp)
-                        ) {
-                            if (viewModel.listTomorrow.value.isEmpty()) {
-                                Icon(
-                                    Icons.Default.Add,
-                                    contentDescription = "Add icon",
-                                    modifier = Modifier
-                                        .align(Alignment.Center)
-                                        .size(64.dp),
-                                    tint = MaterialTheme.colorScheme.onBackground
-                                )
-                            } else {
-                                LazyColumn(contentPadding = PaddingValues(top = 12.dp)) {
-                                    items(viewModel.listTomorrow.value) { listElement ->
-                                        TodoItem(listElement, updateTask = { isCompleted ->
-                                            CoroutineScope(Dispatchers.Default).launch {
-                                                viewModel.updateTask(
-                                                    listElement.id, isCompleted = isCompleted
-                                                )
-                                            }
-                                        }, updateText = { text ->
-                                            CoroutineScope(Dispatchers.Default).launch {
-                                                viewModel.updateTaskText(
-                                                    listElement.id, newText = text
-                                                )
-                                            }
-                                        }, deleteTask = {
-                                            CoroutineScope(Dispatchers.Default).launch {
-                                                viewModel.deleteTask(
-                                                    listElement.id
-                                                )
-                                            }
-                                        })
+                        1 -> {
+                            val lazyListState = rememberLazyListState()
+                            val tomorrowTasks = viewModel.listTomorrow.value
+                            val reorderableState =
+                                rememberReorderableLazyListState(lazyListState) { from, to ->
+                                    viewModel.moveTask(from.index, to.index)
+                                }
+
+                            LazyColumn(
+                                state = lazyListState,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(horizontal = 16.dp),
+                                contentPadding = PaddingValues(top = 12.dp)
+                            ) {
+
+                                itemsIndexed(
+                                    tomorrowTasks,
+                                    key = { _, task -> task.id }) { index, task ->
+                                    ReorderableItem(reorderableState, key = task.id) { isDragging ->
+                                        // Apply a surface or background so the item looks solid when dragged
+                                        Surface(
+                                            tonalElevation = if (isDragging) 4.dp else 0.dp,
+                                            shadowElevation = if (isDragging) 8.dp else 0.dp,
+                                            modifier = Modifier.fillMaxWidth()
+                                        ) {
+                                            IvyLeeTaskItem(
+                                                index = index,
+                                                name = task.name,
+                                                onNameChange = {
+                                                    viewModel.updateTaskText(
+                                                        task.id,
+                                                        it
+                                                    )
+                                                },
+                                                dragHandle = {
+                                                    IconButton(
+                                                        modifier = Modifier.draggableHandle(),
+                                                        onClick = {}) {
+                                                        Icon(Icons.Rounded.DragHandle, "Reorder")
+                                                    }
+                                                }
+                                            )
+                                        }
                                     }
+                                }
+
+                                items(6 - tomorrowTasks.size) { i ->
+                                    IvyLeeTaskItem(
+                                        index = tomorrowTasks.size + i,
+                                        name = "",
+                                        isPlaceholder = true
+                                    )
                                 }
                             }
                         }

@@ -67,6 +67,7 @@ dependencies {
     implementation(libs.hilt.naviation)
     implementation(libs.androidx.work.runtime.ktx)
     ksp(libs.dagger.hilt.compiler)
+    implementation(libs.reorderable)
 
     // Preferences DataStore
     implementation(libs.androidx.datastore.preferences)

@@ -1,7 +1,9 @@
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -25,42 +27,48 @@ fun IvyLeeTaskItem(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 12.dp)
+                .padding(vertical = 18.dp, horizontal = 8.dp)
         ) {
-            // Numbering - Grayed out if it's a placeholder
-            Text(
-                text = "${index + 1}",
-                modifier = Modifier.padding(horizontal = 8.dp),
-                color = if (isPlaceholder)
-                    MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f)
-                else
-                    MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.titleMedium
-            )
-
-            if (isPlaceholder) {
+            Box(Modifier.width(24.dp)) {
                 Text(
-                    text = "Add task...",
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(vertical = 12.dp),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f),
-                    style = MaterialTheme.typography.bodyLarge
+                    text = "${index + 1}",
+                    color = if (isPlaceholder)
+                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f)
+                    else
+                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
+                    style = MaterialTheme.typography.titleMedium
                 )
-            } else {
+            }
+
+
+            Box(modifier = Modifier.weight(1f)) {
+                // If it's a placeholder and empty, show the "Add task" hint
+                if (isPlaceholder && name.isEmpty()) {
+                    Text(
+                        text = "Add task",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f),
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(vertical = 12.dp)
+                    )
+                }
+
                 BasicTextField(
                     value = name,
                     onValueChange = onNameChange,
                     modifier = Modifier
-                        .weight(1f)
+                        .fillMaxWidth()
                         .padding(vertical = 12.dp),
                     textStyle = MaterialTheme.typography.bodyLarge.copy(
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = if (isPlaceholder)
+                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        else
+                            MaterialTheme.colorScheme.onSurface
                     ),
                     cursorBrush = SolidColor(MaterialTheme.colorScheme.primary)
                 )
+            }
 
-                // Only show drag handle if it's an active task
+            if (!isPlaceholder) {
                 dragHandle?.invoke()
             }
         }

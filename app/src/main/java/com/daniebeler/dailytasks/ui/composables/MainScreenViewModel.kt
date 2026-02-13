@@ -6,9 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.daniebeler.dailytasks.db.Task
 import com.daniebeler.dailytasks.repository.TaskRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
@@ -39,6 +39,16 @@ class MainScreenViewModel @Inject constructor(
     fun storeNewTask(task: Task) {
         viewModelScope.launch {
             taskRepository.storeTask(task)
+            loadData()
+        }
+    }
+
+    fun newTaskTomorrow(name: String) {
+        var date = LocalDate.now().toEpochDay() + 1
+        val newTask = Task(0, date, date, name, false)
+
+        viewModelScope.launch {
+            taskRepository.storeTask(newTask)
             loadData()
         }
     }

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -42,6 +43,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.daniebeler.dailytasks.R
@@ -95,50 +97,59 @@ fun MyMainScreen(
             Column(
                 Modifier.fillMaxSize()
             ) {
-                IvyLeeRow()
+                //IvyLeeRow()
 
-                PrimaryTabRow(
-                    selectedTabIndex = pagerState.currentPage,
-                    divider = {},
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 24.dp),
+                    contentAlignment = Alignment.Center
                 ) {
-                    val tabs = listOf(
-                        stringResource(R.string.today) to 0,
-                        stringResource(R.string.tomorrow) to 1
-                    )
-
-                    tabs.forEach { (title, index) ->
-                        val isSelected = pagerState.currentPage == index
-                        val animatedWeight by animateIntAsState(
-                            targetValue = if (isSelected) 700 else 400,
-                            animationSpec = spring(stiffness = Spring.StiffnessLow),
-                            label = "FontWeightAnimation"
+                    PrimaryTabRow(
+                        selectedTabIndex = pagerState.currentPage,
+                        modifier = Modifier.widthIn(max = 300.dp),
+                        divider = {},
+                    ) {
+                        val tabs = listOf(
+                            stringResource(R.string.today) to 0,
+                            stringResource(R.string.tomorrow) to 1
                         )
 
-                        val textColor by animateColorAsState(
-                            targetValue = if (isSelected) MaterialTheme.colorScheme.primary
-                            else MaterialTheme.colorScheme.onSurfaceVariant,
-                            label = "TabColor"
-                        )
+                        tabs.forEach { (title, index) ->
+                            val isSelected = pagerState.currentPage == index
+                            val animatedWeight by animateIntAsState(
+                                targetValue = if (isSelected) 700 else 400,
+                                animationSpec = spring(stiffness = Spring.StiffnessLow),
+                                label = "FontWeightAnimation"
+                            )
+
+                            val textColor by animateColorAsState(
+                                targetValue = if (isSelected) MaterialTheme.colorScheme.primary
+                                else MaterialTheme.colorScheme.onSurfaceVariant,
+                                label = "TabColor"
+                            )
 
 
-                        Tab(
-                            selected = isSelected,
-                            onClick = {
-                                scope.launch { pagerState.animateScrollToPage(index) }
-                            },
-                            text = {
-                                Text(
-                                    text = title,
-                                    style = TextStyle(
-                                        fontFamily = MyVariableFont,
-                                        fontWeight = FontWeight(animatedWeight)
-                                    ),
-                                    color = textColor
-                                )
-                            }
-                        )
+                            Tab(
+                                selected = isSelected,
+                                onClick = {
+                                    scope.launch { pagerState.animateScrollToPage(index) }
+                                },
+                                text = {
+                                    Text(
+                                        text = title,
+                                        style = TextStyle(
+                                            fontFamily = MyVariableFont,
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight(animatedWeight)
+                                        ),
+                                        color = textColor
+                                    )
+                                }
+                            )
+                        }
+
                     }
-
                 }
 
                 HorizontalPager(
@@ -214,7 +225,8 @@ fun MyMainScreen(
                                         Surface(
                                             tonalElevation = if (isDragging) 4.dp else 0.dp,
                                             shadowElevation = if (isDragging) 8.dp else 0.dp,
-                                            modifier = Modifier.fillMaxWidth()
+                                            modifier = Modifier
+                                                .fillMaxWidth()
                                         ) {
                                             IvyLeeTaskItem(
                                                 index = index,
@@ -237,11 +249,18 @@ fun MyMainScreen(
                                     }
                                 }
 
-                                items(6 - tomorrowTasks.size) { i ->
+                                val remainingSlotsCount = 6 - tomorrowTasks.size
+                                items(remainingSlotsCount) { i ->
+                                    val slotIndex = tomorrowTasks.size + i
                                     IvyLeeTaskItem(
-                                        index = tomorrowTasks.size + i,
-                                        name = "",
-                                        isPlaceholder = true
+                                        index = slotIndex,
+                                        name = "", // Always empty for placeholder slots
+                                        isPlaceholder = true,
+                                        onNameChange = { typedText ->
+                                            if (typedText.isNotEmpty()) {
+                                                viewModel.newTaskTomorrow(typedText)
+                                            }
+                                        }
                                     )
                                 }
                             }

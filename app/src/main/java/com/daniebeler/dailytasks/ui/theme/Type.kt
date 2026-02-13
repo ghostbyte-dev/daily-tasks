@@ -13,8 +13,7 @@ import com.daniebeler.dailytasks.R
 @OptIn(ExperimentalTextApi::class)
 val MyVariableFont = FontFamily(
     Font(
-        resId = R.font.inter, // Your file name here
-        // Set the default weight for the font
+        resId = R.font.inter,
         variationSettings = FontVariation.Settings(
             FontVariation.weight(400)
         )
@@ -28,7 +27,7 @@ val Typography = Typography(
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 24.sp,
-        letterSpacing = 0.15.sp
+        letterSpacing = 0.5.sp
     ),
     bodyLarge = TextStyle(
         fontFamily = MyVariableFont,

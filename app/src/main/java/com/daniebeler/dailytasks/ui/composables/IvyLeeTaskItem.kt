@@ -1,3 +1,5 @@
+package com.daniebeler.dailytasks.ui.composables
+
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -5,7 +7,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,7 +26,8 @@ fun IvyLeeTaskItem(
     name: String,
     isPlaceholder: Boolean = false,
     onNameChange: (String) -> Unit = {},
-    dragHandle: @Composable (() -> Unit)? = null
+    dragHandle: @Composable (() -> Unit)? = null,
+    deleteItem: () -> Unit = {}
 ) {
     Column {
         Row(
@@ -42,7 +49,6 @@ fun IvyLeeTaskItem(
 
 
             Box(modifier = Modifier.weight(1f)) {
-                // If it's a placeholder and empty, show the "Add task" hint
                 if (isPlaceholder && name.isEmpty()) {
                     Text(
                         text = "Add task",
@@ -70,6 +76,10 @@ fun IvyLeeTaskItem(
 
             if (!isPlaceholder) {
                 dragHandle?.invoke()
+                IconButton(
+                    onClick = deleteItem) {
+                    Icon(Icons.Rounded.Delete, "Reorder", tint = MaterialTheme.colorScheme.error)
+                }
             }
         }
 

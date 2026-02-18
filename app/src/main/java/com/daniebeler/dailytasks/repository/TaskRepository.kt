@@ -20,12 +20,16 @@ class TaskRepository @Inject constructor(
         return taskDao.getExpiredTasks(LocalDate.now().toEpochDay())
     }
 
-    suspend fun storeTask(task: Task) {
+    suspend fun storeTask(task: Task): Long {
         return taskDao.insertTask(task)
     }
 
     suspend fun updateTask(id: Long, isCompleted: Boolean) {
         taskDao.updateTask(id, isCompleted, LocalDate.now().toEpochDay())
+    }
+
+    suspend fun updateTaskOrder(id: Long, orderNumber: Int) {
+        taskDao.updateTaskText(id, orderNumber, LocalDate.now().toEpochDay())
     }
 
     suspend fun updateTaskText(id: Long, text: String) {

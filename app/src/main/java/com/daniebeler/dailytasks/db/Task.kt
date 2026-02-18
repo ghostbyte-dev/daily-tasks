@@ -12,7 +12,9 @@ data class Task(
     val date: Long,
     @ColumnInfo(defaultValue = "0") val lastInteracted: Long,
     val name: String,
-    var isCompleted: Boolean
+    var isCompleted: Boolean,
+    @ColumnInfo(defaultValue = "0")
+    var orderNumber: Int = 0
 )
 
 fun Task.isOverdue(): Pair<Boolean, Long> {

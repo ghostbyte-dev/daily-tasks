@@ -1,6 +1,5 @@
 package com.daniebeler.dailytasks.ui.composables
 
-import IvyLeeTaskItem
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateIntAsState
@@ -48,6 +47,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.daniebeler.dailytasks.R
 import com.daniebeler.dailytasks.db.Task
+import com.daniebeler.dailytasks.di.TaskItem
 import com.daniebeler.dailytasks.ui.theme.MyVariableFont
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -218,10 +218,14 @@ fun MyMainScreen(
                             ) {
 
                                 itemsIndexed(
-                                    tomorrowTasks,
-                                    key = { _, task -> task.id }) { index, task ->
-                                    ReorderableItem(reorderableState, key = task.id) { isDragging ->
-                                        // Apply a surface or background so the item looks solid when dragged
+                                    items = tomorrowTasks,
+                                    key = { _, item -> item.stableId }
+                                ) { index, item ->
+                                    ReorderableItem(
+                                        reorderableState,
+                                        key = item.stableId,
+                                        enabled = item is TaskItem.SavedTask
+                                    ) { isDragging ->
                                         Surface(
                                             tonalElevation = if (isDragging) 4.dp else 0.dp,
                                             shadowElevation = if (isDragging) 8.dp else 0.dp,
@@ -230,12 +234,13 @@ fun MyMainScreen(
                                         ) {
                                             IvyLeeTaskItem(
                                                 index = index,
-                                                name = task.name,
+                                                name = when (item) {
+                                                    is TaskItem.SavedTask -> item.task.name
+                                                    is TaskItem.PlaceholderTask -> item.name
+                                                },
+                                                isPlaceholder = item is TaskItem.PlaceholderTask,
                                                 onNameChange = {
-                                                    viewModel.updateTaskText(
-                                                        task.id,
-                                                        it
-                                                    )
+                                                    viewModel.updateTaskName(item, it, true)
                                                 },
                                                 dragHandle = {
                                                     IconButton(
@@ -243,25 +248,18 @@ fun MyMainScreen(
                                                         onClick = {}) {
                                                         Icon(Icons.Rounded.DragHandle, "Reorder")
                                                     }
+                                                },
+                                                deleteItem = {
+                                                    when (item) {
+                                                        is TaskItem.SavedTask -> viewModel.deleteTask(
+                                                            item.task.id
+                                                        )
+                                                        is TaskItem.PlaceholderTask -> {}
+                                                    }
                                                 }
                                             )
                                         }
                                     }
-                                }
-
-                                val remainingSlotsCount = 6 - tomorrowTasks.size
-                                items(remainingSlotsCount) { i ->
-                                    val slotIndex = tomorrowTasks.size + i
-                                    IvyLeeTaskItem(
-                                        index = slotIndex,
-                                        name = "", // Always empty for placeholder slots
-                                        isPlaceholder = true,
-                                        onNameChange = { typedText ->
-                                            if (typedText.isNotEmpty()) {
-                                                viewModel.newTaskTomorrow(typedText)
-                                            }
-                                        }
-                                    )
                                 }
                             }
                         }

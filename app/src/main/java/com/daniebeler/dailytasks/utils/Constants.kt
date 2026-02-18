@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Color
 
 
 const val DB_NAME = "tasks"
-const val DB_VERSION = 2
+const val DB_VERSION = 3
 
 const val TABLE_TASKS = "tasks"
 

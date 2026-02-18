@@ -18,7 +18,7 @@ class MainScreenViewModel @Inject constructor(
     private val taskRepository: TaskRepository
 ) : ViewModel() {
 
-    var listToday = mutableStateOf<List<Task>>(emptyList())
+    var listToday = mutableStateOf<List<TaskItem>>(emptyList())
         private set
     var listTomorrow = mutableStateOf<List<TaskItem>>(emptyList())
         private set
@@ -31,7 +31,10 @@ class MainScreenViewModel @Inject constructor(
 
     fun loadData() {
         viewModelScope.launch {
-            listToday.value = taskRepository.getTasksOfToday()
+            listToday.value =
+                taskRepository.getTasksOfToday().sortedBy { it.orderNumber }.map {
+                    TaskItem.SavedTask(it)
+                }
             listTomorrow.value =
                 taskRepository.getTasksOfTomorrow().sortedBy { it.orderNumber }.map {
                     TaskItem.SavedTask(it)
@@ -51,6 +54,7 @@ class MainScreenViewModel @Inject constructor(
             listTomorrow.value += TaskItem.PlaceholderTask("")
         }*/
         listTomorrow.value += TaskItem.PlaceholderTask("")
+        listToday.value += TaskItem.PlaceholderTask("")
     }
 
     fun storeNewTask(task: Task) {
@@ -61,7 +65,7 @@ class MainScreenViewModel @Inject constructor(
     }
 
     fun updateTaskName(item: TaskItem, newName: String, tomorrow: Boolean) {
-        val list: MutableState<List<TaskItem>> = if (tomorrow) listTomorrow else listTomorrow
+        val list: MutableState<List<TaskItem>> = if (tomorrow) listTomorrow else listToday
 
         list.value = list.value.map { current ->
             if (current === item) {
@@ -78,7 +82,7 @@ class MainScreenViewModel @Inject constructor(
             is TaskItem.PlaceholderTask -> {
                 if (newName.length == 1) {
                     createTask(
-                        item, newName, date = LocalDate.now().plusDays(1),
+                        item, newName, date = if(tomorrow) LocalDate.now().plusDays(1) else LocalDate.now(),
                         listState = list
                     )
                 }
@@ -124,38 +128,11 @@ class MainScreenViewModel @Inject constructor(
             }
             val numberOfPlaceholders = listState.value.count { it is TaskItem.PlaceholderTask }
             if (numberOfPlaceholders == 0) {
-                listTomorrow.value += TaskItem.PlaceholderTask("")
+                listState.value += TaskItem.PlaceholderTask("")
             }
         }
     }
 
-
-    fun updateTask(id: Long, isCompleted: Boolean) {
-        viewModelScope.launch {
-            taskRepository.updateTask(id, isCompleted)
-            loadData()
-        }
-    }
-
-    fun updateTaskText(id: Long, newText: String) {
-        listTomorrow.value = listTomorrow.value.map { item ->
-            when (item) {
-                is TaskItem.SavedTask -> {
-                    if (item.task.id == id) {
-                        item.copy(task = item.task.copy(name = newText))
-                    } else {
-                        item
-                    }
-                }
-
-                is TaskItem.PlaceholderTask -> item
-            }
-        }
-
-        viewModelScope.launch(Dispatchers.IO) {
-            taskRepository.updateTaskText(id, newText)
-        }
-    }
 
     fun deleteTask(id: Long) {
         viewModelScope.launch {
@@ -164,17 +141,19 @@ class MainScreenViewModel @Inject constructor(
         }
     }
 
-    fun moveTask(fromIndex: Int, toIndex: Int) {
-        val currentList = listTomorrow.value.toMutableList()
+    fun moveTask(
+        fromIndex: Int, toIndex: Int, listState: MutableState<List<TaskItem>>
+    ) {
+        val currentList = listState.value.toMutableList()
         if (fromIndex !in currentList.indices || toIndex !in currentList.indices) return
 
         val item = currentList.removeAt(fromIndex)
         currentList.add(toIndex, item)
 
         // Update local state for the reorder animation
-        listTomorrow.value = currentList
+        listState.value = currentList
         var index = 0
-        listTomorrow.value = listTomorrow.value.map { current ->
+        listState.value = listState.value.map { current ->
             if (current is TaskItem.SavedTask) {
                 current.task.orderNumber = index
                 viewModelScope.launch(Dispatchers.IO) {

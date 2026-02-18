@@ -11,16 +11,13 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.rounded.DragHandle
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -159,45 +156,66 @@ fun MyMainScreen(
                         .background(MaterialTheme.colorScheme.background)
                 ) { tabIndex ->
                     when (tabIndex) {
-                        0 -> Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(horizontal = 16.dp)
-                        ) {
-                            if (viewModel.listToday.value.isEmpty() && viewModel.listOld.value.isEmpty()) {
-                                Icon(
-                                    Icons.Default.Done,
-                                    contentDescription = "Done icon",
-                                    modifier = Modifier
-                                        .align(Alignment.Center)
-                                        .size(64.dp),
-                                    tint = MaterialTheme.colorScheme.onBackground
-                                )
-                            } else {
-                                LazyColumn(contentPadding = PaddingValues(top = 12.dp)) {
-                                    items(viewModel.listOld.value + viewModel.listToday.value) { listElement ->
-                                        TodoItem(listElement, updateTask = { isCompleted ->
-                                            CoroutineScope(Dispatchers.Default).launch {
-                                                viewModel.updateTask(
-                                                    listElement.id, isCompleted = isCompleted
-                                                )
-                                            }
-                                        }, updateText = { text ->
-                                            CoroutineScope(Dispatchers.Default).launch {
-                                                viewModel.updateTaskText(
-                                                    listElement.id, newText = text
-                                                )
-                                            }
-                                        }, deleteTask = {
-                                            CoroutineScope(Dispatchers.Default).launch {
-                                                viewModel.deleteTask(
-                                                    listElement.id
-                                                )
-                                            }
-                                        })
-                                    }
+                        0 -> {
+                            val lazyListState = rememberLazyListState()
+                            val tomorrowTasks = viewModel.listToday.value
+                            val reorderableState =
+                                rememberReorderableLazyListState(lazyListState) { from, to ->
+                                    viewModel.moveTask(from.index, to.index, viewModel.listToday)
                                 }
 
+                            LazyColumn(
+                                state = lazyListState,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(horizontal = 16.dp),
+                                contentPadding = PaddingValues(top = 12.dp)
+                            ) {
+
+                                itemsIndexed(
+                                    items = tomorrowTasks,
+                                    key = { _, item -> item.stableId }
+                                ) { index, item ->
+                                    ReorderableItem(
+                                        reorderableState,
+                                        key = item.stableId,
+                                        enabled = item is TaskItem.SavedTask
+                                    ) { isDragging ->
+                                        Surface(
+                                            tonalElevation = if (isDragging) 4.dp else 0.dp,
+                                            shadowElevation = if (isDragging) 8.dp else 0.dp,
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                        ) {
+                                            IvyLeeTaskItem(
+                                                index = index,
+                                                name = when (item) {
+                                                    is TaskItem.SavedTask -> item.task.name
+                                                    is TaskItem.PlaceholderTask -> item.name
+                                                },
+                                                isPlaceholder = item is TaskItem.PlaceholderTask,
+                                                onNameChange = {
+                                                    viewModel.updateTaskName(item, it, false)
+                                                },
+                                                dragHandle = {
+                                                    IconButton(
+                                                        modifier = Modifier.draggableHandle(),
+                                                        onClick = {}) {
+                                                        Icon(Icons.Rounded.DragHandle, "Reorder")
+                                                    }
+                                                },
+                                                deleteItem = {
+                                                    when (item) {
+                                                        is TaskItem.SavedTask -> viewModel.deleteTask(
+                                                            item.task.id
+                                                        )
+                                                        is TaskItem.PlaceholderTask -> {}
+                                                    }
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
                             }
                         }
 
@@ -206,7 +224,7 @@ fun MyMainScreen(
                             val tomorrowTasks = viewModel.listTomorrow.value
                             val reorderableState =
                                 rememberReorderableLazyListState(lazyListState) { from, to ->
-                                    viewModel.moveTask(from.index, to.index)
+                                    viewModel.moveTask(from.index, to.index, viewModel.listTomorrow)
                                 }
 
                             LazyColumn(

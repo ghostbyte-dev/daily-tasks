@@ -133,6 +133,12 @@ class MainScreenViewModel @Inject constructor(
         }
     }
 
+    fun updateTask(id: Long, isCompleted: Boolean) {
+        viewModelScope.launch {
+            taskRepository.updateTask(id, isCompleted)
+            loadData()
+        }
+    }
 
     fun deleteTask(id: Long) {
         viewModelScope.launch {

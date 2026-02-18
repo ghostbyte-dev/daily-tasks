@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -18,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -27,7 +30,10 @@ fun IvyLeeTaskItem(
     isPlaceholder: Boolean = false,
     onNameChange: (String) -> Unit = {},
     dragHandle: @Composable (() -> Unit)? = null,
-    deleteItem: () -> Unit = {}
+    isCompleted: Boolean,
+    today: Boolean,
+    deleteItem: () -> Unit,
+    completeItem: () -> Unit
 ) {
     Column {
         Row(
@@ -65,10 +71,12 @@ fun IvyLeeTaskItem(
                         .fillMaxWidth()
                         .padding(vertical = 12.dp),
                     textStyle = MaterialTheme.typography.bodyLarge.copy(
-                        color = if (isPlaceholder)
-                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                        else
-                            MaterialTheme.colorScheme.onSurface
+                        color = when {
+                            isPlaceholder -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                            isCompleted -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                            else -> MaterialTheme.colorScheme.onSurface
+                        },
+                        textDecoration = if (isCompleted) TextDecoration.LineThrough else TextDecoration.None
                     ),
                     cursorBrush = SolidColor(MaterialTheme.colorScheme.primary)
                 )
@@ -76,6 +84,19 @@ fun IvyLeeTaskItem(
 
             if (!isPlaceholder) {
                 dragHandle?.invoke()
+                if (today) {
+                    if (isCompleted) {
+                        IconButton(
+                            onClick = completeItem) {
+                            Icon(Icons.Rounded.Close, "Reorder", tint = MaterialTheme.colorScheme.error)
+                        }
+                    } else {
+                        IconButton(
+                            onClick = completeItem) {
+                            Icon(Icons.Rounded.Check, "Reorder", tint = MaterialTheme.colorScheme.primary)
+                        }
+                    }
+                }
                 IconButton(
                     onClick = deleteItem) {
                     Icon(Icons.Rounded.Delete, "Reorder", tint = MaterialTheme.colorScheme.error)

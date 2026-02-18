@@ -203,12 +203,27 @@ fun MyMainScreen(
                                                         onClick = {}) {
                                                         Icon(Icons.Rounded.DragHandle, "Reorder")
                                                     }
+                                                }, isCompleted = when (item) {
+                                                    is TaskItem.SavedTask -> item.task.isCompleted
+                                                    is TaskItem.PlaceholderTask -> true
                                                 },
                                                 deleteItem = {
                                                     when (item) {
                                                         is TaskItem.SavedTask -> viewModel.deleteTask(
                                                             item.task.id
                                                         )
+
+                                                        is TaskItem.PlaceholderTask -> {}
+                                                    }
+                                                },
+                                                today = true,
+                                                completeItem = {
+                                                    when (item) {
+                                                        is TaskItem.SavedTask -> viewModel.updateTask(
+                                                            item.task.id,
+                                                            !item.task.isCompleted
+                                                        )
+
                                                         is TaskItem.PlaceholderTask -> {}
                                                     }
                                                 }
@@ -267,11 +282,27 @@ fun MyMainScreen(
                                                         Icon(Icons.Rounded.DragHandle, "Reorder")
                                                     }
                                                 },
+                                                isCompleted = when (item) {
+                                                    is TaskItem.SavedTask -> item.task.isCompleted
+                                                    is TaskItem.PlaceholderTask -> true
+                                                },
                                                 deleteItem = {
                                                     when (item) {
                                                         is TaskItem.SavedTask -> viewModel.deleteTask(
                                                             item.task.id
                                                         )
+
+                                                        is TaskItem.PlaceholderTask -> {}
+                                                    }
+                                                },
+                                                today = false,
+                                                completeItem = {
+                                                    when (item) {
+                                                        is TaskItem.SavedTask -> viewModel.updateTask(
+                                                            item.task.id,
+                                                            !item.task.isCompleted
+                                                        )
+
                                                         is TaskItem.PlaceholderTask -> {}
                                                     }
                                                 }

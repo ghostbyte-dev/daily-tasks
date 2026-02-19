@@ -30,8 +30,6 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,15 +41,11 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.daniebeler.dailytasks.R
-import com.daniebeler.dailytasks.db.Task
 import com.daniebeler.dailytasks.di.TaskItem
 import com.daniebeler.dailytasks.ui.theme.MyVariableFont
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
-import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,26 +62,6 @@ fun MyMainScreen(
     val scope = rememberCoroutineScope()
 
     val pagerState = rememberPagerState { 2 }
-
-    val showBottomSheet = remember { mutableStateOf(false) }
-
-    NewTaskBottomSheet(
-        showState = showBottomSheet,
-        isForToday = pagerState.currentPage == 0,
-        storeTask = { taskText ->
-
-            var date = LocalDate.now().toEpochDay()
-            if (pagerState.currentPage == 1) {
-                date++
-            }
-            val newTask = Task(0, date, date, taskText, false)
-
-            CoroutineScope(Dispatchers.Default).launch {
-                viewModel.storeNewTask(newTask)
-            }
-
-            showBottomSheet.value = false
-        })
 
     Scaffold(content = { paddingValues ->
         Box(Modifier.padding(paddingValues)) {
@@ -313,10 +287,6 @@ fun MyMainScreen(
                             }
                         }
                     }
-                }
-
-                NewTaskButtonRow {
-                    showBottomSheet.value = true
                 }
             }
         }

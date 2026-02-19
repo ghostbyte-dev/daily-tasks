@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -43,6 +44,7 @@ import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.daniebeler.dailytasks.R
 import com.daniebeler.dailytasks.di.TaskItem
 import com.daniebeler.dailytasks.ui.theme.MyVariableFont
+import com.daniebeler.dailytasks.utils.imeAwareInsets
 import kotlinx.coroutines.launch
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
@@ -64,9 +66,9 @@ fun MyMainScreen(
     val pagerState = rememberPagerState { 2 }
 
     Scaffold(content = { paddingValues ->
-        Box(Modifier.padding(paddingValues)) {
+        Box(Modifier.padding(paddingValues).consumeWindowInsets(paddingValues)) {
             Column(
-                Modifier.fillMaxSize()
+                Modifier.fillMaxSize().imeAwareInsets()
             ) {
                 //IvyLeeRow()
 

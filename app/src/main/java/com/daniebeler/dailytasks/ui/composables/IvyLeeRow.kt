@@ -1,8 +1,6 @@
 package com.daniebeler.dailytasks.ui.composables
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -27,7 +25,6 @@ fun IvyLeeRow() {
         horizontalArrangement = Arrangement.Center,
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.background)
             .padding(16.dp)
     ) {
         Button(
@@ -35,11 +32,10 @@ fun IvyLeeRow() {
                 uriHandler.openUri("https://jamesclear.com/ivy-lee")
             },
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.onSurface,
-                contentColor = MaterialTheme.colorScheme.inverseOnSurface
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
             ),
-            shape = RoundedCornerShape(12.dp),
-            contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp),
+            shape = RoundedCornerShape(12.dp)
         ) {
             Text(text = stringResource(R.string.the_ivy_lee_method))
         }

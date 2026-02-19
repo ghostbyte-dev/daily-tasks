@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "7d1a0e4a932c8a65b99e96fb06dbcddb",
+    "identityHash": "2eb21fe3b8d8abfd62c7909120c47e94",
     "entities": [
       {
         "tableName": "tasks",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `date` INTEGER NOT NULL, `lastInteracted` INTEGER NOT NULL DEFAULT 0, `name` TEXT NOT NULL, `isCompleted` INTEGER NOT NULL, `orderNumber` INTEGER NOT NULL DEFAULT 0)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `date` INTEGER NOT NULL, `lastInteracted` INTEGER NOT NULL DEFAULT 0, `name` TEXT NOT NULL, `isCompleted` INTEGER NOT NULL, `orderNumber` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -43,8 +43,7 @@
             "fieldPath": "orderNumber",
             "columnName": "orderNumber",
             "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "0"
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -57,7 +56,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7d1a0e4a932c8a65b99e96fb06dbcddb')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2eb21fe3b8d8abfd62c7909120c47e94')"
     ]
   }
 }

@@ -3,6 +3,7 @@ package com.daniebeler.dailytasks.di
 import android.content.Context
 import androidx.room.Room
 import com.daniebeler.dailytasks.db.AppDatabase
+import com.daniebeler.dailytasks.db.MIGRATION_2_3
 import com.daniebeler.dailytasks.db.TaskDao
 import com.daniebeler.dailytasks.utils.DB_NAME
 import dagger.Module
@@ -21,7 +22,7 @@ class Module {
     fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase =
         Room.databaseBuilder(
             context, AppDatabase::class.java, DB_NAME
-        ).build()
+        ).addMigrations(MIGRATION_2_3).build()
 
     @Provides
     fun providePlantDao(appDatabase: AppDatabase): TaskDao {

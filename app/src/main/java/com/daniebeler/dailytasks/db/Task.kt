@@ -3,6 +3,8 @@ package com.daniebeler.dailytasks.db
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.daniebeler.dailytasks.utils.TABLE_TASKS
 import java.time.LocalDate
 
@@ -13,7 +15,6 @@ data class Task(
     @ColumnInfo(defaultValue = "0") val lastInteracted: Long,
     val name: String,
     var isCompleted: Boolean,
-    @ColumnInfo(defaultValue = "0")
     var orderNumber: Int = 0
 )
 
@@ -34,4 +35,11 @@ fun Task.isUntilToday(): Boolean {
     val taskEpochDay = this.date
 
     return taskEpochDay == currentEpochDay
+}
+
+val MIGRATION_2_3 = object : Migration(2, 3) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            "ALTER TABLE $TABLE_TASKS ADD COLUMN orderNumber INTEGER NOT NULL DEFAULT 0")
+    }
 }

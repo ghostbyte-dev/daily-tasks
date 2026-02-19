@@ -31,37 +31,37 @@ class MainScreenViewModel @Inject constructor(
 
     fun loadData() {
         viewModelScope.launch {
-            listToday.value =
+            val savedItemsToday: List<TaskItem.SavedTask> =
                 taskRepository.getTasksOfToday().sortedBy { it.orderNumber }.map {
                     TaskItem.SavedTask(it)
                 }
-            listTomorrow.value =
+            val savedItemsTomorrow: List<TaskItem.SavedTask> =
                 taskRepository.getTasksOfTomorrow().sortedBy { it.orderNumber }.map {
                     TaskItem.SavedTask(it)
                 }
-            addTaskPlaceholder()
+            addTaskPlaceholder(listTomorrow, savedItemsTomorrow)
+            addTaskPlaceholder(listToday, savedItemsToday)
             listOld.value = taskRepository.getExpiredTasks()
         }
     }
 
-    fun addTaskPlaceholder() {
-        /*val lenght = listTomorrow.value.size
-        var placeholderNeededCount = 6 - lenght;
-        if (placeholderNeededCount < 1) {
-            placeholderNeededCount = 1;
-        }
-        for (i in 1..placeholderNeededCount) {
-            listTomorrow.value += TaskItem.PlaceholderTask("")
-        }*/
-        listTomorrow.value += TaskItem.PlaceholderTask("")
-        listToday.value += TaskItem.PlaceholderTask("")
-    }
+    fun addTaskPlaceholder(
+        list: MutableState<List<TaskItem>>,
+        savedItems: List<TaskItem.SavedTask>
+    ) {
+        list.value = emptyList()
+        var length = savedItems.size
+        if (length <= 5) length = 5
 
-    fun storeNewTask(task: Task) {
-        viewModelScope.launch {
-            taskRepository.storeTask(task)
-            loadData()
+        for (i in 0..length) {
+            val savedItem = savedItems.find { it.task.orderNumber == i }
+            if (savedItem == null) {
+                list.value += TaskItem.PlaceholderTask("")
+            } else {
+                list.value += savedItem
+            }
         }
+
     }
 
     fun updateTaskName(item: TaskItem, newName: String, tomorrow: Boolean) {
@@ -82,7 +82,9 @@ class MainScreenViewModel @Inject constructor(
             is TaskItem.PlaceholderTask -> {
                 if (newName.length == 1) {
                     createTask(
-                        item, newName, date = if(tomorrow) LocalDate.now().plusDays(1) else LocalDate.now(),
+                        item,
+                        newName,
+                        date = if (tomorrow) LocalDate.now().plusDays(1) else LocalDate.now(),
                         listState = list
                     )
                 }
@@ -102,6 +104,13 @@ class MainScreenViewModel @Inject constructor(
         date: LocalDate,
         listState: MutableState<List<TaskItem>>
     ) {
+        var orderNumber = 0
+        val index = listState.value.indexOfFirst { it.stableId === placeholder.stableId }
+        orderNumber += if (index != -1) {
+            index
+        } else {
+            listState.value.size
+        }
         viewModelScope.launch {
             val epochDay = date.toEpochDay()
             val newTask = Task(
@@ -110,7 +119,7 @@ class MainScreenViewModel @Inject constructor(
                 lastInteracted = epochDay,
                 name = text,
                 isCompleted = false,
-                orderNumber = listState.value.size
+                orderNumber = orderNumber
             )
 
             val newId = taskRepository.storeTask(newTask)

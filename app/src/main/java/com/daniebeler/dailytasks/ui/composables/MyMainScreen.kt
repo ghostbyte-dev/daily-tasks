@@ -153,7 +153,6 @@ fun MyMainScreen(
                                     ReorderableItem(
                                         reorderableState,
                                         key = item.stableId,
-                                        enabled = item is TaskItem.SavedTask
                                     ) { isDragging ->
                                         Surface(
                                             tonalElevation = if (isDragging) 4.dp else 0.dp,
@@ -231,7 +230,6 @@ fun MyMainScreen(
                                     ReorderableItem(
                                         reorderableState,
                                         key = item.stableId,
-                                        enabled = item is TaskItem.SavedTask
                                     ) { isDragging ->
                                         Surface(
                                             tonalElevation = if (isDragging) 4.dp else 0.dp,

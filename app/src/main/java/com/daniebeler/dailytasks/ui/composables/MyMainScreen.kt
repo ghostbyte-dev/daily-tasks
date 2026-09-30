@@ -1,18 +1,18 @@
 package com.daniebeler.dailytasks.ui.composables
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateIntAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -20,36 +20,35 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.DragHandle
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material.icons.rounded.Event
+import androidx.compose.material.icons.rounded.Today
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
-import com.daniebeler.dailytasks.R
 import com.daniebeler.dailytasks.di.TaskItem
-import com.daniebeler.dailytasks.ui.theme.MyVariableFont
 import com.daniebeler.dailytasks.utils.imeAwareInsets
 import kotlinx.coroutines.launch
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
-@OptIn(ExperimentalMaterial3Api::class)
+private data class ToolbarDestination(val label: String, val icon: ImageVector)
+
+
 @Composable
 fun MyMainScreen(
     viewModel: MainScreenViewModel = hiltViewModel(
@@ -65,66 +64,22 @@ fun MyMainScreen(
 
     val pagerState = rememberPagerState { 2 }
 
+    val destinations = listOf(
+        ToolbarDestination("Today", Icons.Rounded.Today),
+        ToolbarDestination("Tomorrow", Icons.Rounded.Event)
+    )
+
     Scaffold(content = { paddingValues ->
-        Box(Modifier.padding(paddingValues).consumeWindowInsets(paddingValues)) {
+        Box(
+            Modifier
+                .padding(paddingValues)
+                .consumeWindowInsets(paddingValues)
+        ) {
             Column(
-                Modifier.fillMaxSize().imeAwareInsets()
+                Modifier
+                    .fillMaxSize()
+                    .imeAwareInsets()
             ) {
-                //IvyLeeRow()
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 24.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    PrimaryTabRow(
-                        selectedTabIndex = pagerState.currentPage,
-                        modifier = Modifier.widthIn(max = 300.dp),
-                        divider = {},
-                    ) {
-                        val tabs = listOf(
-                            stringResource(R.string.today) to 0,
-                            stringResource(R.string.tomorrow) to 1
-                        )
-
-                        tabs.forEach { (title, index) ->
-                            val isSelected = pagerState.currentPage == index
-                            val animatedWeight by animateIntAsState(
-                                targetValue = if (isSelected) 700 else 400,
-                                animationSpec = spring(stiffness = Spring.StiffnessLow),
-                                label = "FontWeightAnimation"
-                            )
-
-                            val textColor by animateColorAsState(
-                                targetValue = if (isSelected) MaterialTheme.colorScheme.primary
-                                else MaterialTheme.colorScheme.onSurfaceVariant,
-                                label = "TabColor"
-                            )
-
-
-                            Tab(
-                                selected = isSelected,
-                                onClick = {
-                                    scope.launch { pagerState.animateScrollToPage(index) }
-                                },
-                                text = {
-                                    Text(
-                                        text = title,
-                                        style = TextStyle(
-                                            fontFamily = MyVariableFont,
-                                            fontSize = 16.sp,
-                                            fontWeight = FontWeight(animatedWeight)
-                                        ),
-                                        color = textColor
-                                    )
-                                }
-                            )
-                        }
-
-                    }
-                }
-
                 HorizontalPager(
                     state = pagerState,
                     modifier = Modifier
@@ -150,8 +105,7 @@ fun MyMainScreen(
 
                                 itemsIndexed(
                                     items = tomorrowTasks,
-                                    key = { _, item -> item.stableId }
-                                ) { index, item ->
+                                    key = { _, item -> item.stableId }) { index, item ->
                                     ReorderableItem(
                                         reorderableState,
                                         key = item.stableId,
@@ -159,8 +113,7 @@ fun MyMainScreen(
                                         Surface(
                                             tonalElevation = if (isDragging) 4.dp else 0.dp,
                                             shadowElevation = if (isDragging) 8.dp else 0.dp,
-                                            modifier = Modifier
-                                                .fillMaxWidth()
+                                            modifier = Modifier.fillMaxWidth()
                                         ) {
                                             IvyLeeTaskItem(
                                                 index = index,
@@ -178,7 +131,8 @@ fun MyMainScreen(
                                                         onClick = {}) {
                                                         Icon(Icons.Rounded.DragHandle, "Reorder")
                                                     }
-                                                }, isCompleted = when (item) {
+                                                },
+                                                isCompleted = when (item) {
                                                     is TaskItem.SavedTask -> item.task.isCompleted
                                                     is TaskItem.PlaceholderTask -> true
                                                 },
@@ -195,14 +149,12 @@ fun MyMainScreen(
                                                 completeItem = {
                                                     when (item) {
                                                         is TaskItem.SavedTask -> viewModel.updateTask(
-                                                            item.task.id,
-                                                            !item.task.isCompleted
+                                                            item.task.id, !item.task.isCompleted
                                                         )
 
                                                         is TaskItem.PlaceholderTask -> {}
                                                     }
-                                                }
-                                            )
+                                                })
                                         }
                                     }
                                 }
@@ -227,8 +179,7 @@ fun MyMainScreen(
 
                                 itemsIndexed(
                                     items = tomorrowTasks,
-                                    key = { _, item -> item.stableId }
-                                ) { index, item ->
+                                    key = { _, item -> item.stableId }) { index, item ->
                                     ReorderableItem(
                                         reorderableState,
                                         key = item.stableId,
@@ -236,8 +187,7 @@ fun MyMainScreen(
                                         Surface(
                                             tonalElevation = if (isDragging) 4.dp else 0.dp,
                                             shadowElevation = if (isDragging) 8.dp else 0.dp,
-                                            modifier = Modifier
-                                                .fillMaxWidth()
+                                            modifier = Modifier.fillMaxWidth()
                                         ) {
                                             IvyLeeTaskItem(
                                                 index = index,
@@ -273,14 +223,12 @@ fun MyMainScreen(
                                                 completeItem = {
                                                     when (item) {
                                                         is TaskItem.SavedTask -> viewModel.updateTask(
-                                                            item.task.id,
-                                                            !item.task.isCompleted
+                                                            item.task.id, !item.task.isCompleted
                                                         )
 
                                                         is TaskItem.PlaceholderTask -> {}
                                                     }
-                                                }
-                                            )
+                                                })
                                         }
                                     }
                                 }
@@ -288,7 +236,42 @@ fun MyMainScreen(
                         }
                     }
                 }
-                IvyLeeRow()
+
+                val systemNavigationBarHeight =
+                    WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+
+                HorizontalFloatingToolbar(
+                    expanded = true,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(bottom = systemNavigationBarHeight + 4.dp)
+                ) {
+                    destinations.forEachIndexed { index, destination ->
+                        val isActive = pagerState.currentPage == index
+
+                        if (isActive) {
+                            Button(
+                                onClick = {
+                                    scope.launch { pagerState.animateScrollToPage(index) }
+                                }) {
+                                Icon(
+                                    imageVector = destination.icon,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(ButtonDefaults.IconSize)
+                                )
+                                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                                Text(destination.label)
+                            }
+                        } else {
+                            TextButton(
+                                onClick = {
+                                    scope.launch { pagerState.animateScrollToPage(index) }
+                                }) {
+                                Text(destination.label)
+                            }
+                        }
+                    }
+                }
             }
         }
     })

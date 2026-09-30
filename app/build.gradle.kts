@@ -7,12 +7,12 @@ plugins {
 
 android {
     namespace = "com.daniebeler.dailytasks"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.daniebeler.dailytasks"
         minSdk = 26
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 7
         versionName = "2.0.1"
 
@@ -72,7 +72,7 @@ dependencies {
     // Preferences DataStore
     implementation(libs.androidx.datastore.preferences)
 
-    implementation (libs.androidx.room.runtime)
+    implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
 }

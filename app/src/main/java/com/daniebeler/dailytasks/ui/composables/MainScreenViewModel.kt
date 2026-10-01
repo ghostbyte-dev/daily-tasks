@@ -40,7 +40,7 @@ class MainScreenViewModel @Inject constructor(
                     TaskItem.SavedTask(it)
                 }
             addTaskPlaceholder(listTomorrow, savedItemsTomorrow)
-            addTaskPlaceholder(listToday, savedItemsToday)
+            //addTaskPlaceholder(listToday, savedItemsToday)
             listOld.value = taskRepository.getExpiredTasks()
         }
     }

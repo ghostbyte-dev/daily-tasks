@@ -19,7 +19,7 @@ private data class ToolbarDestination(val label: String, val icon: ImageVector)
 
 @Composable
 fun MainToolbar(
-    currentPage: Int,
+    currentPage: () -> Int,
     onSelect: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -30,7 +30,7 @@ fun MainToolbar(
 
     HorizontalFloatingToolbar(expanded = true, modifier = modifier) {
         destinations.forEachIndexed { index, destination ->
-            if (currentPage == index) {
+            if (currentPage() == index) {
                 Button(onClick = { onSelect(index) }) {
                     Icon(destination.icon, null, Modifier.size(ButtonDefaults.IconSize))
                     Spacer(Modifier.size(ButtonDefaults.IconSpacing))

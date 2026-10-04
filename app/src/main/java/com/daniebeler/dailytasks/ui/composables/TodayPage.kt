@@ -18,6 +18,10 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -25,14 +29,15 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 
 @Composable
 fun TodayPage(
-    viewModel: MainScreenViewModel,
-    modifier: Modifier = Modifier
+    viewModel: MainScreenViewModel, modifier: Modifier = Modifier
 ) {
     val lazyListState = rememberLazyListState()
-    val tasks = viewModel.listToday.value
+    val tasks by viewModel.listToday
     val reorderableState = rememberReorderableLazyListState(lazyListState) { from, to ->
-        viewModel.moveTask(from.index, to.index, viewModel.listToday)
+        viewModel.moveTask(from.index, to.index, isForToday = true)
     }
+
+    var showNewTask by rememberSaveable { mutableStateOf(false) }
 
     Column(modifier = modifier.padding(top = 12.dp, start = 8.dp, end = 8.dp)) {
         TodayHeader()
@@ -57,14 +62,12 @@ fun TodayPage(
                 }
             } else {
                 itemsIndexed(
-                    items = tasks,
-                    key = { _, item -> item.stableId }
-                ) { index, item ->
+                    items = tasks, key = { _, task -> task.id }) { index, task ->
                     ReorderableTaskItem(
                         reorderableState = reorderableState,
-                        item = item,
+                        task = task,
                         index = index,
-                        isTomorrow = false,
+                        isForToday = true,
                         viewModel = viewModel
                     )
                 }
@@ -72,10 +75,9 @@ fun TodayPage(
 
             item {
                 Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center
+                    modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center
                 ) {
-                    Button(onClick = {}) {
+                    Button(onClick = { showNewTask = true }) {
                         Icon(
                             imageVector = Icons.Rounded.Add,
                             contentDescription = null,
@@ -87,5 +89,12 @@ fun TodayPage(
                 }
             }
         }
+    }
+
+    if (showNewTask) {
+        NewTaskBottomSheet(
+            isForToday = true,
+            onDismiss = { showNewTask = false },
+            onSave = { viewModel.addTask(it, isForToday = true) })
     }
 }

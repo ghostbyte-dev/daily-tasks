@@ -44,6 +44,7 @@ fun MyMainScreen(
         ) {
             HorizontalPager(
                 state = pagerState,
+                beyondViewportPageCount = 1,
                 modifier = Modifier
                     .weight(1f)
                     .background(MaterialTheme.colorScheme.background)
@@ -55,7 +56,7 @@ fun MyMainScreen(
             }
 
             MainToolbar(
-                currentPage = pagerState.currentPage,
+                currentPage = { pagerState.currentPage },
                 onSelect = { scope.launch { pagerState.animateScrollToPage(it) } },
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)

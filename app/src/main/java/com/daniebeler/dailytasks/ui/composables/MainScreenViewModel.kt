@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.daniebeler.dailytasks.db.Task
-import com.daniebeler.dailytasks.di.TaskItem
 import com.daniebeler.dailytasks.repository.TaskRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -18,9 +17,9 @@ class MainScreenViewModel @Inject constructor(
     private val taskRepository: TaskRepository
 ) : ViewModel() {
 
-    var listToday = mutableStateOf<List<TaskItem>>(emptyList())
+    var listToday = mutableStateOf<List<Task>>(emptyList())
         private set
-    var listTomorrow = mutableStateOf<List<TaskItem>>(emptyList())
+    var listTomorrow = mutableStateOf<List<Task>>(emptyList())
         private set
     var listOld = mutableStateOf<List<Task>>(emptyList())
         private set
@@ -31,153 +30,83 @@ class MainScreenViewModel @Inject constructor(
 
     fun loadData() {
         viewModelScope.launch {
-            val savedItemsToday: List<TaskItem.SavedTask> =
-                taskRepository.getTasksOfToday().sortedBy { it.orderNumber }.map {
-                    TaskItem.SavedTask(it)
-                }
-            val savedItemsTomorrow: List<TaskItem.SavedTask> =
-                taskRepository.getTasksOfTomorrow().sortedBy { it.orderNumber }.map {
-                    TaskItem.SavedTask(it)
-                }
-            addTaskPlaceholder(listTomorrow, savedItemsTomorrow)
-            //addTaskPlaceholder(listToday, savedItemsToday)
+            listToday.value = taskRepository.getTasksOfToday().sortedBy { it.orderNumber }
+            listTomorrow.value = taskRepository.getTasksOfTomorrow().sortedBy { it.orderNumber }
             listOld.value = taskRepository.getExpiredTasks()
         }
     }
 
-    fun addTaskPlaceholder(
-        list: MutableState<List<TaskItem>>,
-        savedItems: List<TaskItem.SavedTask>
-    ) {
-        list.value = emptyList()
-        var length = savedItems.size
-        if (length <= 5) length = 5
+    private fun listFor(isForToday: Boolean): MutableState<List<Task>> =
+        if (isForToday) listToday else listTomorrow
 
-        for (i in 0..length) {
-            val savedItem = savedItems.find { it.task.orderNumber == i }
-            if (savedItem == null) {
-                list.value += TaskItem.PlaceholderTask("")
-            } else {
-                list.value += savedItem
-            }
-        }
-
-    }
-
-    fun updateTaskName(item: TaskItem, newName: String, tomorrow: Boolean) {
-        val list: MutableState<List<TaskItem>> = if (tomorrow) listTomorrow else listToday
-
-        list.value = list.value.map { current ->
-            if (current === item) {
-                when (current) {
-                    is TaskItem.PlaceholderTask -> current.copy(name = newName)
-                    is TaskItem.SavedTask -> current.copy(task = current.task.copy(name = newName))
-                }
-            } else {
-                current
-            }
-        }
-
-        when (item) {
-            is TaskItem.PlaceholderTask -> {
-                if (newName.length == 1) {
-                    createTask(
-                        item,
-                        newName,
-                        date = if (tomorrow) LocalDate.now().plusDays(1) else LocalDate.now(),
-                        listState = list
-                    )
-                }
-            }
-
-            is TaskItem.SavedTask -> {
-                viewModelScope.launch(Dispatchers.IO) {
-                    taskRepository.updateTaskText(item.task.id, newName)
-                }
-            }
-        }
-    }
-
-    private fun createTask(
-        placeholder: TaskItem.PlaceholderTask,
-        text: String,
-        date: LocalDate,
-        listState: MutableState<List<TaskItem>>
-    ) {
-        var orderNumber = 0
-        val index = listState.value.indexOfFirst { it.stableId === placeholder.stableId }
-        orderNumber += if (index != -1) {
-            index
-        } else {
-            listState.value.size
-        }
+    fun addTask(text: String, isForToday: Boolean) {
+        val date = if (isForToday) LocalDate.now() else LocalDate.now().plusDays(1)
+        val list = if (isForToday) listToday else listTomorrow
         viewModelScope.launch {
             val epochDay = date.toEpochDay()
-            val newTask = Task(
+            val task = Task(
                 id = 0,
                 date = epochDay,
                 lastInteracted = epochDay,
                 name = text,
                 isCompleted = false,
-                orderNumber = orderNumber
+                orderNumber = list.value.size
             )
+            val id = taskRepository.storeTask(task)
+            list.value += task.copy(id = id)
+        }
+    }
 
-            val newId = taskRepository.storeTask(newTask)
-            val savedTaskEntity = newTask.copy(id = newId)
-
-            listState.value = listState.value.map { current ->
-                if (current.stableId == placeholder.stableId) {
-                    TaskItem.SavedTask(
-                        task = savedTaskEntity,
-                        stableId = placeholder.stableId
-                    )
-                } else {
-                    current
-                }
-            }
-            val numberOfPlaceholders = listState.value.count { it is TaskItem.PlaceholderTask }
-            if (numberOfPlaceholders == 0) {
-                listState.value += TaskItem.PlaceholderTask("")
-            }
+    /** Applies [transform] to the task with [id] in whichever list contains it. */
+    private fun modifyTask(id: Long, transform: (Task) -> Task) {
+        listOf(listToday, listTomorrow).forEach { list ->
+            list.value = list.value.map { if (it.id == id) transform(it) else it }
         }
     }
 
     fun updateTask(id: Long, isCompleted: Boolean) {
-        viewModelScope.launch {
+        modifyTask(id) { it.copy(isCompleted = isCompleted) }
+        viewModelScope.launch(Dispatchers.IO) {
             taskRepository.updateTask(id, isCompleted)
-            loadData()
+        }
+    }
+
+    fun updateTaskName(id: Long, newName: String) {
+        modifyTask(id) { it.copy(name = newName) }
+        viewModelScope.launch(Dispatchers.IO) {
+            taskRepository.updateTaskText(id, newName)
         }
     }
 
     fun deleteTask(id: Long) {
-        viewModelScope.launch {
-            taskRepository.deleteTask(id)
-            loadData()
-        }
-    }
-
-    fun moveTask(
-        fromIndex: Int, toIndex: Int, listState: MutableState<List<TaskItem>>
-    ) {
-        val currentList = listState.value.toMutableList()
-        if (fromIndex !in currentList.indices || toIndex !in currentList.indices) return
-
-        val item = currentList.removeAt(fromIndex)
-        currentList.add(toIndex, item)
-
-        // Update local state for the reorder animation
-        listState.value = currentList
-        var index = 0
-        listState.value = listState.value.map { current ->
-            if (current is TaskItem.SavedTask) {
-                current.task.orderNumber = index
-                viewModelScope.launch(Dispatchers.IO) {
-                    taskRepository.updateTaskOrder(current.task.id, current.task.orderNumber)
-                }
+        listOf(listToday, listTomorrow).forEach { list ->
+            val remaining = list.value.filter { it.id != id }
+            if (remaining.size != list.value.size) {
+                // Close the gap in the order numbers
+                list.value = remaining.mapIndexed { i, t -> t.copy(orderNumber = i) }
+                saveOrder(list.value)
             }
-            index++
-            current
+        }
+        viewModelScope.launch(Dispatchers.IO) {
+            taskRepository.deleteTask(id)
         }
     }
 
+    /** In-memory only. Call from the reorder callback on every move. */
+    fun moveTask(from: Int, to: Int, isForToday: Boolean) {
+        val list = listFor(isForToday)
+        val current = list.value.toMutableList()
+        if (from !in current.indices || to !in current.indices) return
+        current.add(to, current.removeAt(from))
+        list.value = current.mapIndexed { i, t -> t.copy(orderNumber = i) }
+    }
+
+    /** Persists the current order. Call once when the drag ends. */
+    fun saveOrder(isForToday: Boolean) = saveOrder(listFor(isForToday).value)
+
+    private fun saveOrder(tasks: List<Task>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            tasks.forEach { taskRepository.updateTaskOrder(it.id, it.orderNumber) }
+        }
+    }
 }

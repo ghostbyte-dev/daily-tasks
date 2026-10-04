@@ -1,5 +1,6 @@
 package com.daniebeler.dailytasks.ui.composables
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -45,9 +46,9 @@ fun TodayPage(
         LazyColumn(
             state = lazyListState,
             modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
-            contentPadding = PaddingValues(top = 12.dp)
+                .fillMaxSize(),
+            contentPadding = PaddingValues(top = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
             if (tasks.isEmpty()) {
                 item {
@@ -67,6 +68,7 @@ fun TodayPage(
                         reorderableState = reorderableState,
                         task = task,
                         index = index,
+                        count = tasks.size,
                         isForToday = true,
                         viewModel = viewModel
                     )

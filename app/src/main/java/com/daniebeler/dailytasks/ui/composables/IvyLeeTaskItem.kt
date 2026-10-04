@@ -1,113 +1,50 @@
 package com.daniebeler.dailytasks.ui.composables
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.Color
 
 @Composable
 fun IvyLeeTaskItem(
     index: Int,
+    count: Int,
     name: String,
-    isPlaceholder: Boolean = false,
-    onNameChange: (String) -> Unit = {},
-    dragHandle: @Composable (() -> Unit)? = null,
+    onClick: () -> Unit = {},
     isCompleted: Boolean,
     today: Boolean,
-    deleteItem: () -> Unit,
     completeItem: () -> Unit
 ) {
-    Column {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 18.dp, horizontal = 8.dp)
-        ) {
-            Box(Modifier.width(24.dp)) {
-                Text(
-                    text = "${index + 1}",
-                    color = if (isPlaceholder)
-                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f)
-                    else
-                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
+    val completedColor = if (isSystemInDarkTheme()) Color(0xFF2E5E33) else Color(0xFFC8E6C9)
+    val containerColor =
+        if (isCompleted) completedColor else MaterialTheme.colorScheme.surfaceContainer
 
 
-            Box(modifier = Modifier.weight(1f)) {
-                if (isPlaceholder && name.isEmpty()) {
-                    Text(
-                        text = "Add task",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f),
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.padding(vertical = 12.dp)
-                    )
-                }
-
-                BasicTextField(
-                    value = name,
-                    onValueChange = onNameChange,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 12.dp),
-                    textStyle = MaterialTheme.typography.bodyLarge.copy(
-                        color = when {
-                            isPlaceholder -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                            isCompleted -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
-                            else -> MaterialTheme.colorScheme.onSurface
-                        },
-                        textDecoration = if (isCompleted) TextDecoration.LineThrough else TextDecoration.None
-                    ),
-                    cursorBrush = SolidColor(MaterialTheme.colorScheme.primary)
-                )
-            }
-
-            if (!isPlaceholder) {
-                dragHandle?.invoke()
-                if (today) {
-                    if (isCompleted) {
-                        IconButton(
-                            onClick = completeItem) {
-                            Icon(Icons.Rounded.Close, "Reorder", tint = MaterialTheme.colorScheme.error)
-                        }
-                    } else {
-                        IconButton(
-                            onClick = completeItem) {
-                            Icon(Icons.Rounded.Check, "Reorder", tint = MaterialTheme.colorScheme.primary)
-                        }
-                    }
-                }
-                IconButton(
-                    onClick = deleteItem) {
-                    Icon(Icons.Rounded.Delete, "Reorder", tint = MaterialTheme.colorScheme.error)
-                }
-            }
-        }
-
-        HorizontalDivider(
-            modifier = Modifier.padding(horizontal = 8.dp),
-            thickness = 0.5.dp,
-            color = MaterialTheme.colorScheme.outlineVariant
-        )
-    }
+    SegmentedListItem(
+        onClick = onClick,
+        shapes = ListItemDefaults.segmentedShapes(
+            index = index, count = count
+        ),
+        colors = ListItemDefaults.segmentedColors(
+            containerColor = containerColor,
+            contentColor = MaterialTheme.colorScheme.onSurface
+        ),
+        content = {
+            Text(
+                text = name,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.titleMedium
+            )
+        },
+        trailingContent = {
+            Checkbox(
+                checked = isCompleted,
+                onCheckedChange = { completeItem() }
+            )
+        },
+    )
 }

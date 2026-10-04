@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -29,8 +30,7 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 
 @Composable
 fun TomorrowPage(
-    viewModel: MainScreenViewModel,
-    modifier: Modifier = Modifier
+    viewModel: MainScreenViewModel, modifier: Modifier = Modifier
 ) {
     val lazyListState = rememberLazyListState()
     val tasks by viewModel.listTomorrow
@@ -51,13 +51,12 @@ fun TomorrowPage(
             contentPadding = PaddingValues(top = 12.dp)
         ) {
             itemsIndexed(
-                items = tasks,
-                key = { _, task -> task.id }
-            ) { index, task ->
+                items = tasks, key = { _, task -> task.id }) { index, task ->
                 ReorderableTaskItem(
                     reorderableState = reorderableState,
                     task = task,
                     index = index,
+                    count = tasks.size,
                     isForToday = false,
                     viewModel = viewModel
                 )
@@ -65,17 +64,25 @@ fun TomorrowPage(
 
             item {
                 Box(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 28.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Button(onClick = { showNewTask = true }) {
+                    val size = ButtonDefaults.MediumContainerHeight
+                    Button(
+                        modifier = Modifier.heightIn(size),
+                        contentPadding = ButtonDefaults.contentPaddingFor(
+                            size, hasStartIcon = true
+                        ),
+                        onClick = { showNewTask = true }) {
                         Icon(
                             imageVector = Icons.Rounded.Add,
                             contentDescription = null,
-                            modifier = Modifier.size(ButtonDefaults.IconSize)
+                            modifier = Modifier.size(ButtonDefaults.iconSizeFor(size))
                         )
-                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                        Text("New Task")
+                        Spacer(Modifier.size(ButtonDefaults.iconSpacingFor(size)))
+                        Text(text = "New Task", style = ButtonDefaults.textStyleFor(size))
                     }
                 }
             }
@@ -86,7 +93,6 @@ fun TomorrowPage(
         NewTaskBottomSheet(
             isForToday = false,
             onDismiss = { showNewTask = false },
-            onSave = { viewModel.addTask(it, isForToday = false) }
-        )
+            onSave = { viewModel.addTask(it, isForToday = false) })
     }
 }

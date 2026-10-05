@@ -3,8 +3,6 @@ package com.daniebeler.dailytasks.ui.composables
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -60,24 +58,18 @@ fun NewTaskBottomSheet(
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
 
     ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        sheetState = sheetState
+        onDismissRequest = onDismiss, sheetState = sheetState, dragHandle = null
     ) {
         Column(
             Modifier
                 .padding(horizontal = 16.dp)
-                .padding(bottom = 16.dp)
-                .navigationBarsPadding()
-                .imePadding()
+                .padding(top = 16.dp, bottom = 16.dp)
         ) {
             Text(
-                modifier = Modifier.padding(start = 14.dp),
-                text = stringResource(
+                modifier = Modifier.padding(start = 14.dp), text = stringResource(
                     if (isForToday) R.string.new_task_for_today
                     else R.string.new_task_for_tomorrow
-                ),
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.Bold
+                ), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold
             )
 
             Row(
@@ -105,8 +97,7 @@ fun NewTaskBottomSheet(
                 )
 
                 Button(
-                    onClick = { submit() },
-                    enabled = text.isNotBlank()
+                    onClick = { submit() }, enabled = text.isNotBlank()
                 ) {
                     Text(stringResource(R.string.save))
                 }

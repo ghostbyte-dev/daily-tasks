@@ -14,10 +14,10 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,6 +34,11 @@ fun TodayPage(
 ) {
     val lazyListState = rememberLazyListState()
     val tasks by viewModel.listToday
+
+    val doneCount = tasks.count { it.isCompleted }
+    val focusTaskId = tasks.firstOrNull { !it.isCompleted }?.id
+
+
     val reorderableState = rememberReorderableLazyListState(lazyListState) { from, to ->
         viewModel.moveTask(from.index, to.index, isForToday = true)
     }
@@ -50,6 +55,16 @@ fun TodayPage(
             contentPadding = PaddingValues(top = 12.dp),
             verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
+            if (tasks.isNotEmpty()) {
+                item {
+                    TodayProgress(
+                        done = doneCount,
+                        total = tasks.size,
+                        modifier = Modifier.padding(bottom = 12.dp)
+                    )
+                }
+            }
+
             if (tasks.isEmpty()) {
                 item {
                     Box(
@@ -58,7 +73,7 @@ fun TodayPage(
                             .fillMaxWidth(),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("No tasks for today")
+                        Text("Nothing planned yet. Add your most important tasks for today.")
                     }
                 }
             } else {
@@ -77,9 +92,12 @@ fun TodayPage(
 
             item {
                 Box(
-                    modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Button(onClick = { showNewTask = true }) {
+                    TextButton(onClick = { showNewTask = true }) {
                         Icon(
                             imageVector = Icons.Rounded.Add,
                             contentDescription = null,

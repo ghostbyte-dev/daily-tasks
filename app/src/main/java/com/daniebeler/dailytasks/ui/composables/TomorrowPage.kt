@@ -36,7 +36,8 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 
 @Composable
 fun TomorrowPage(
-    viewModel: MainScreenViewModel
+    viewModel: MainScreenViewModel,
+    onNavigateToToday: () -> Unit,
 ) {
     val lazyListState = rememberLazyListState()
     val tasks by viewModel.listTomorrow
@@ -65,7 +66,7 @@ fun TomorrowPage(
     }
 
     Column(modifier = Modifier.padding(top = 12.dp, start = 8.dp, end = 8.dp)) {
-        TomorrowHeader()
+        TomorrowHeader(onNavigate = onNavigateToToday)
 
         LazyColumn(
             state = lazyListState,

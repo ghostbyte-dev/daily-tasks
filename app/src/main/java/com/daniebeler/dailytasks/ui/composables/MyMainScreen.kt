@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -12,9 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.daniebeler.dailytasks.utils.imeAwareInsets
@@ -50,19 +47,15 @@ fun MyMainScreen(
                     .background(MaterialTheme.colorScheme.background)
             ) { tabIndex ->
                 when (tabIndex) {
-                    0 -> TodayPage(viewModel)
-                    1 -> TomorrowPage(viewModel)
+                    0 -> TodayPage(
+                        viewModel,
+                        onNavigateToTomorrow = { scope.launch { pagerState.animateScrollToPage(1) } })
+
+                    1 -> TomorrowPage(
+                        viewModel,
+                        onNavigateToToday = { scope.launch { pagerState.animateScrollToPage(0) } })
                 }
             }
-
-            MainToolbar(
-                currentPage = { pagerState.currentPage },
-                onSelect = { scope.launch { pagerState.animateScrollToPage(it) } },
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .navigationBarsPadding()
-                    .padding(bottom = 4.dp)
-            )
         }
     })
 }
